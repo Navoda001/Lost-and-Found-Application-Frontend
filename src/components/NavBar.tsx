@@ -89,28 +89,6 @@ const navList = (
           </div>
         )}
       </div>
-
-      {/* Content Section */}
-      <div className="max-w-screen-md mx-auto px-4 py-12">
-        <div className="mb-12 rounded-lg overflow-hidden shadow-md">
-          <img
-            alt="nature"
-            className="w-full h-[32rem] object-cover object-center"
-            src="https://images.unsplash.com/photo-1485470733090-0aae1788d5af?auto=format&fit=crop&w=2717&q=80"
-          />
-        </div>
-        <h2 className="text-3xl font-bold text-gray-800 mb-4">What is Material Tailwind</h2>
-        {[...Array(5)].map((_, index) => (
-          <p key={index} className="text-gray-600 mb-4 leading-relaxed">
-            Can you help me out? You will get a lot of free exposure doing this. Can my website be in English? There is
-            too much white space, do less with more. So that will be a conversation piece. Can you rework to make the
-            pizza look more delicious? Other agencies charge much less. Can you make the blue bluer? I think we need to
-            start from scratch. Make it sexy. I’ll pay you in a week. We don’t need to pay upfront. I hope you
-            understand. Can you make it stand out more? Make the font bigger. Are you busy this weekend? I have a new
-            project with a tight deadline. There are more projects lined up—charge extra next time.
-          </p>
-        ))}
-      </div>
     </div>
   );
 };
