@@ -41,6 +41,15 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId }) => {
     fetchBase64Image();
   }, [itemId]);
 
+  const formatDate = (rawDate: string | null | undefined): string => {
+    if (!rawDate) return "N/A";
+
+    const date = new Date(rawDate);
+    if (isNaN(date.getTime())) return rawDate; // fallback for invalid date
+
+    return date.toISOString().split("T")[0].replace(/-/g, "/"); // e.g., 2025/05/06
+  };
+
   if (!open || !itemId) return null;
 
 
@@ -73,11 +82,11 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId }) => {
               <li><span className="font-semibold">Status:</span> {itemData?.itemStatus}</li>
               <li><span className="font-semibold">Location:</span> {itemData?.location}</li>
               <li><span className="font-semibold">Reported By:</span> {itemData?.reportedBy}</li>
-              <li><span className="font-semibold">Reported Date:</span> {itemData?.reportedDate}</li>
+              <li><span className="font-semibold">Reported Date:</span> {formatDate(itemData?.reportedDate ? new Date(itemData.reportedDate[0], itemData.reportedDate[1] - 1, itemData.reportedDate[2]).toISOString() : null)}</li>
               {itemData?.foundBy && <li><span className="font-semibold">Found By:</span> {itemData?.foundBy}</li>}
-              {itemData?.foundDate && <li><span className="font-semibold">Found Date:</span> {itemData?.foundDate}</li>}
+              {itemData?.foundDate && <li><span className="font-semibold">Found Date:</span> {formatDate(itemData?.foundDate)}</li>}
               {itemData?.claimedBy && <li><span className="font-semibold">Claimed By:</span> {itemData?.claimedBy}</li>}
-              {itemData?.claimedDate && <li><span className="font-semibold">Claimed Date:</span> {itemData?.claimedDate}</li>}
+              {itemData?.claimedDate && <li><span className="font-semibold">Claimed Date:</span> {formatDate(itemData?.claimedDate)}</li>}
             </ul>
             <button
               onClick={onClose}
