@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { AddItem } from "../../service/ItemService";
 import { Listbox } from "@headlessui/react";
+import Swal from 'sweetalert2'
 
 interface AddItemModalProps {
   open: boolean;
@@ -63,12 +64,30 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, onClose }) => {
     try {
       const response = await AddItem(formData); // Send as multipart/form-data
       if (response.status === 200 || response.status === 201) {
+        Swal.fire({
+          title: "Successful!",
+          confirmButtonColor: "#000",
+          text: "Item is Saved!",
+          icon: "success"
+        });
         onClose();
       } else {
+        Swal.fire({
+          title: "Error!",
+          confirmButtonColor: "red",
+          text: "Error uploading data!",
+          icon: "error"
+        });
         console.error("Error uploading data");
       }
     } catch (error) {
       console.error("Error uploading file:", error);
+      Swal.fire({
+        title: "Error!",
+        confirmButtonColor: "red",
+        text: "Error saving file!",
+        icon: "error"
+      });
     }
 
     setFormData({

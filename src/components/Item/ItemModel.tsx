@@ -1,9 +1,11 @@
-import React, { use, useEffect, useState } from "react";
-import { DeleteItem, GetItemById } from "../../service/ItemService";
+import React, { useEffect, useState } from "react";
+import Swal from 'sweetalert2'
+import { DeleteItem, FoundItem, GetItemById } from "../../service/ItemService";
 
 interface ItemModelProps {
   open: boolean;
   onClose: () => void;
+  refreshData: () => Promise<void>; // 👈 async function
   itemId: string | null;
 }
 
@@ -22,9 +24,12 @@ interface AllItem {
   claimedDate?: string;
 }
 
-const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId }) => {
+const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshData }) => {
   const [imgSrc, setImgSrc] = useState<string | null>(null);
   const [itemData, setItemData] = useState<AllItem | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
 
   useEffect(() => {
     const fetchBase64Image = async () => {
@@ -50,15 +55,99 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId }) => {
     return date.toISOString().split("T")[0].replace(/-/g, "/"); // e.g., 2025/05/06
   };
 
-  const handleDelete = async () => {
+ const handleDelete = async () => {
+  const confirm = await Swal.fire({
+    title: "Are you sure?",
+    text: "This action cannot be undone.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#888",
+    confirmButtonText: "Yes, delete it!"
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  try {
+    setIsDeleting(true);
     const response = await DeleteItem(itemData?.itemId);
-    if (response.status == 204) {
-      alert("Item deleted successfully");
+    if (response.status === 204) {
+      Swal.fire({
+        title: "Deleted!",
+        confirmButtonColor: "#000",
+        text: "Item is Deleted!",
+        icon: "success"
+      });
+      await refreshData();
       onClose();
     } else {
-      alert("Failed to delete item");
+      Swal.fire({
+        title: "Error!",
+        confirmButtonColor: "red",
+        text: "Failed to delete item!",
+        icon: "error"
+      });
     }
+  } catch (error) {
+    console.error("Error deleting item:", error);
+    Swal.fire({
+      title: "Error!",
+      confirmButtonColor: "red",
+      text: "Failed to delete item!",
+      icon: "error"
+    });
+  } finally {
+    setIsDeleting(false);
   }
+};
+
+
+  const handleClaim = async () => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to mark this item as FOUND?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#000",
+      cancelButtonColor: "#888",
+      confirmButtonText: "Yes, mark as FOUND"
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      setIsLoading(true);
+      const response = await FoundItem(itemData?.itemId, "FOUND");
+      if (response.status === 204) {
+        Swal.fire({
+          title: "Success!",
+          confirmButtonColor: "#000",
+          text: "Item is set to Found!",
+          icon: "success"
+        });
+        await refreshData();
+        onClose();
+      } else {
+        Swal.fire({
+          title: "Error!",
+          confirmButtonColor: "red",
+          text: "Failed to change item status",
+          icon: "error"
+        });
+      }
+    } catch (error) {
+      console.error("Error updating item status:", error);
+      Swal.fire({
+        title: "Error!",
+        confirmButtonColor: "red",
+        text: "Failed to change item status",
+        icon: "error"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   if (!open || !itemId) return null;
 
@@ -98,28 +187,56 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId }) => {
               {itemData?.claimedBy && <li><span className="font-semibold">Claimed By:</span> {itemData?.claimedBy}</li>}
               {itemData?.claimedDate && <li><span className="font-semibold">Claimed Date:</span> {formatDate(itemData?.claimedDate)}</li>}
             </ul>
-            <div className="flex col-span-3 space-x-1">
-             
-             <button
-              onClick={onClose}
-              className="mt-6 w-full bg-green-900 text-white py-2 rounded-md hover:bg-green-700 text-sm font-semibold transition"
-            >
-              Request
-            </button>
 
-              <button
-              onClick={onClose}
-              className="mt-6 w-full bg-slate-950 text-white py-2 rounded-md hover:bg-gray-700 text-sm font-semibold transition"
-            >
-              Close
-            </button>
-            </div>
+
+            {itemData?.itemStatus === "FOUND" ? (
+              <div className="flex col-span-3 space-x-1">
+                <button
+                  onClick={onClose}
+                  className="mt-6 w-full bg-green-900 text-white py-2 rounded-md hover:bg-green-700 text-sm font-semibold transition"
+                >
+                  Request
+                </button>
+                <button
+                  onClick={onClose}
+                  className="mt-6 w-full bg-slate-950 text-white py-2 rounded-md hover:bg-gray-700 text-sm font-semibold transition"
+                >
+                  Close
+                </button>
+              </div>
+            ) : (
+              <div className="flex col-span-3 space-x-1">
+                <button
+                  onClick={handleClaim}
+                  disabled={isLoading}
+                  className={`mt-6 w-full py-2 rounded-md text-sm font-semibold transition ${isLoading
+                    ? "bg-yellow-600 cursor-not-allowed"
+                    : "bg-yellow-700 hover:bg-yellow-600 text-white"
+                    }`}
+                >
+                  {isLoading ? "Processing..." : "Found"}
+                </button>
+
+                <button
+                  onClick={onClose}
+                  className="mt-6 w-full bg-slate-950 text-white py-2 rounded-md hover:bg-gray-700 text-sm font-semibold transition"
+                >
+                  Close
+                </button>
+              </div>
+            )}
+
             <button
               onClick={handleDelete}
-              className="mt-6 w-full bg-red-900 text-white py-2 rounded-md hover:bg-red-700 text-sm font-semibold transition"
+              disabled={isDeleting}
+              className={`mt-4 w-full py-2 rounded-md text-sm font-semibold transition ${isDeleting
+                  ? "bg-red-800 cursor-not-allowed"
+                  : "bg-red-900 hover:bg-red-800 text-white"
+                }`}
             >
-              Delete
+              {isDeleting ? "Deleting..." : "Delete"}
             </button>
+
           </div>
         </div>
       </div>

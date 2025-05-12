@@ -40,7 +40,6 @@ const ItemConsole = () => {
     };
 
     useEffect(() => {
-
         loadData();
     }, []);
 
@@ -77,7 +76,7 @@ const ItemConsole = () => {
     const currentItems = itemData.slice(startIndex, startIndex + itemsPerPage);
 
     return (
-        <div className="p-6">
+        <div className="p-6 z-0">
             {/* Card Container */}
             {/*add new Item */}
 
@@ -99,7 +98,7 @@ const ItemConsole = () => {
 
             <div ref={containerRef} className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
                 {currentItems.map((item, index) => (
-                    <div key={item.itemId} ref={index === 0 ? cardRef : null}>
+                    <div key={`${item.itemId}-${item.itemStatus}`} ref={index === 0 ? cardRef : null}>
                         <ItemCard
                             itemId={item.itemId}
                             onReadMore={() => handleReadMore(item.itemId)}
@@ -128,10 +127,8 @@ const ItemConsole = () => {
 
             {/* Modal */}
             <ItemModel open={modalOpen}
-                onClose={() => {
-                    handleCloseModal();
-                    loadData(); // Refresh data after item is added
-                }}
+                onClose={handleCloseModal}
+                refreshData={loadData} // 👈 pass the function
                 itemId={selectedItemId} />
         </div>
     );

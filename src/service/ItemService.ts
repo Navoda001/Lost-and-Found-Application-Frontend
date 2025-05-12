@@ -50,4 +50,26 @@ const DeleteItem = async(itemId :any) =>{
   }
 }
 
-export{GetAllItems,AddItem,GetItemById,DeleteItem}
+const FoundItem = async(itemId :any,status:any) =>{
+  interface AllItem {
+  itemStatus: string;
+}
+
+  const st: AllItem = {
+    itemStatus: status
+  }
+  try{
+    const response  =  await axios.patch(
+        `${baseURL}?itemId=${itemId}`,
+        st
+        );
+    console.log(response)
+    return response;
+    
+  }catch(error){
+      console.error("Failed to get the data",error);
+      throw error
+  }   
+}
+
+export{GetAllItems,AddItem,GetItemById,DeleteItem,FoundItem}
