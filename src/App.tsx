@@ -1,19 +1,17 @@
-import React, { useState } from "react";
 import './App.css';
+import { BrowserRouter, Route, Routes } from 'react-router';
 import NavBar from './components/NavBar';
-import ItemCard from './components/ItemCard';
-import ItemModel from './components/ItemModel';
+import ItemConsole from "./components/Item/ItemConsole";
 
 function App() {
-  const [openModal, setOpenModal] = useState(false);
   return (
     <div className="App">
-      <NavBar/>
-
-      <ItemCard onReadMore={() => setOpenModal(true)} />
-
-       <ItemModel open={openModal} onClose={() => setOpenModal(false)} />
-
+      <BrowserRouter>
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<ItemConsole />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
