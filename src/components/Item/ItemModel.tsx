@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Swal from 'sweetalert2'
 import { DeleteItem, FoundItem, GetItemById } from "../../service/ItemService";
+import { AddRequest } from "../../service/RequestService";
 
 interface ItemModelProps {
   open: boolean;
@@ -24,9 +25,18 @@ interface AllItem {
   claimedDate?: string;
 }
 
+interface AllRequest {
+  itemId: string | null;
+  userId: string;
+}
+
 const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshData }) => {
   const [imgSrc, setImgSrc] = useState<string | null>(null);
   const [itemData, setItemData] = useState<AllItem | null>(null);
+  const [requestData, setRequestData] = useState<AllRequest>({
+    itemId: " ",
+    userId: "U001",
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -55,51 +65,51 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
     return date.toISOString().split("T")[0].replace(/-/g, "/"); // e.g., 2025/05/06
   };
 
- const handleDelete = async () => {
-  const confirm = await Swal.fire({
-    title: "Are you sure?",
-    text: "This action cannot be undone.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#d33",
-    cancelButtonColor: "#888",
-    confirmButtonText: "Yes, delete it!"
-  });
+  const handleDelete = async () => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#888",
+      confirmButtonText: "Yes, delete it!"
+    });
 
-  if (!confirm.isConfirmed) return;
+    if (!confirm.isConfirmed) return;
 
-  try {
-    setIsDeleting(true);
-    const response = await DeleteItem(itemData?.itemId);
-    if (response.status === 204) {
-      Swal.fire({
-        title: "Deleted!",
-        confirmButtonColor: "#000",
-        text: "Item is Deleted!",
-        icon: "success"
-      });
-      await refreshData();
-      onClose();
-    } else {
+    try {
+      setIsDeleting(true);
+      const response = await DeleteItem(itemData?.itemId);
+      if (response.status === 204) {
+        Swal.fire({
+          title: "Deleted!",
+          confirmButtonColor: "#000",
+          text: "Item is Deleted!",
+          icon: "success"
+        });
+        await refreshData();
+        onClose();
+      } else {
+        Swal.fire({
+          title: "Error!",
+          confirmButtonColor: "red",
+          text: "Failed to delete item!",
+          icon: "error"
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting item:", error);
       Swal.fire({
         title: "Error!",
         confirmButtonColor: "red",
         text: "Failed to delete item!",
         icon: "error"
       });
+    } finally {
+      setIsDeleting(false);
     }
-  } catch (error) {
-    console.error("Error deleting item:", error);
-    Swal.fire({
-      title: "Error!",
-      confirmButtonColor: "red",
-      text: "Failed to delete item!",
-      icon: "error"
-    });
-  } finally {
-    setIsDeleting(false);
-  }
-};
+  };
 
 
   const handleClaim = async () => {
@@ -141,6 +151,66 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
         title: "Error!",
         confirmButtonColor: "red",
         text: "Failed to change item status",
+        icon: "error"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRequest = async () => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to send a request for this item?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#000",
+      cancelButtonColor: "#888",
+      confirmButtonText: "Yes, send request"
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      setIsLoading(true); // Optional: show loading UI state
+
+      setRequestData({
+        itemId: itemData?.itemId ?? "",
+        userId: "U002"
+      });
+      console.log("Request data:", requestData);
+      const response = await AddRequest(requestData);
+
+      if (response.status === 200 || response.status === 201) {
+        Swal.fire({
+          title: "Success!",
+          confirmButtonColor: "#000",
+          text: "Your request has been submitted successfully.",
+          icon: "success"
+        });
+        onClose();
+      } else if (response.status === 500) {
+        Swal.fire({
+          title: "Error!",
+          confirmButtonColor: "red",
+          text: "Something went wrong while submitting the request.",
+          icon: "error"
+        });
+      }
+      else {
+        Swal.fire({
+          title: "Error!",
+          confirmButtonColor: "red",
+          text: "Failed to send the request.",
+          icon: "error"
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting request:", error);
+      Swal.fire({
+        title: "Error!",
+        confirmButtonColor: "red",
+        text: "Failed to send the request.You have already sent a request for this item.",
         icon: "error"
       });
     } finally {
@@ -192,10 +262,12 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
             {itemData?.itemStatus === "FOUND" ? (
               <div className="flex col-span-3 space-x-1">
                 <button
-                  onClick={onClose}
-                  className="mt-6 w-full bg-green-900 text-white py-2 rounded-md hover:bg-green-700 text-sm font-semibold transition"
+                  onClick={handleRequest}
+                  className={`mt-6 w-full py-2 rounded-md text-sm font-semibold transition ${isLoading ? 'bg-green-800 cursor-not-allowed text-white' : 'bg-green-900 hover:bg-green-700 text-white'
+                    }`}
+                  disabled={isLoading} // Disables the button when loading
                 >
-                  Request
+                  {isLoading ? "Requesting..." : "Request"}
                 </button>
                 <button
                   onClick={onClose}
@@ -210,7 +282,7 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
                   onClick={handleClaim}
                   disabled={isLoading}
                   className={`mt-6 w-full py-2 rounded-md text-sm font-semibold transition ${isLoading
-                    ? "bg-yellow-600 cursor-not-allowed"
+                    ? "bg-yellow-600 cursor-not-allowed text-white"
                     : "bg-yellow-700 hover:bg-yellow-600 text-white"
                     }`}
                 >
@@ -230,8 +302,8 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
               onClick={handleDelete}
               disabled={isDeleting}
               className={`mt-4 w-full py-2 rounded-md text-sm font-semibold transition ${isDeleting
-                  ? "bg-red-800 cursor-not-allowed"
-                  : "bg-red-900 hover:bg-red-800 text-white"
+                ? "bg-red-800 cursor-not-allowed text-white"
+                : "bg-red-900 hover:bg-red-800 text-white"
                 }`}
             >
               {isDeleting ? "Deleting..." : "Delete"}

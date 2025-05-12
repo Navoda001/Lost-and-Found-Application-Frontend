@@ -22,6 +22,7 @@ interface AllItem {
 }
 
 
+
 const ItemCard: React.FC<ItemCardProps> = ({
   itemId,
   onReadMore,
