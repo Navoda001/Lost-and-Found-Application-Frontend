@@ -1,5 +1,5 @@
 import React, { use, useEffect, useState } from "react";
-import { GetItemById } from "../../service/ItemService";
+import { DeleteItem, GetItemById } from "../../service/ItemService";
 
 interface ItemModelProps {
   open: boolean;
@@ -50,17 +50,27 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId }) => {
     return date.toISOString().split("T")[0].replace(/-/g, "/"); // e.g., 2025/05/06
   };
 
+  const handleDelete = async () => {
+    const response = await DeleteItem(itemData?.itemId);
+    if (response.status == 204) {
+      alert("Item deleted successfully");
+      onClose();
+    } else {
+      alert("Failed to delete item");
+    }
+  }
+
   if (!open || !itemId) return null;
 
 
   return (
     <div
-      className="fixed inset-0 z-[100] grid place-items-center bg-black bg-opacity-60 backdrop-blur-sm"
+      className="fixed h-screen overflow-auto inset-0 z-[100] grid place-items-center bg-black bg-opacity-60 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative mx-4 sm:mx-auto w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl bg-white transition-transform duration-300"
+        className="relative h-auto p-0 m-2 mx-4 sm:mx-auto w-full max-w-lg rounded-2xl overflow-visible shadow-2xl bg-white transition-transform duration-300"
       >
         <div className="flex flex-col">
           {/* Image Section */}
@@ -68,7 +78,7 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId }) => {
             <img
               src={imgSrc || "https://png.pngtree.com/png-vector/20210827/ourmid/pngtree-new-item-poster-png-image_3834274.jpg"}
               alt={itemData?.itemName}
-              className="w-full h-full object-fill"
+              className="w-full h-full object-fill rounded-2xl"
             />
           </div>
 
@@ -88,11 +98,27 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId }) => {
               {itemData?.claimedBy && <li><span className="font-semibold">Claimed By:</span> {itemData?.claimedBy}</li>}
               {itemData?.claimedDate && <li><span className="font-semibold">Claimed Date:</span> {formatDate(itemData?.claimedDate)}</li>}
             </ul>
-            <button
+            <div className="flex col-span-3 space-x-1">
+             
+             <button
               onClick={onClose}
-              className="mt-6 w-full bg-slate-800 text-white py-2 rounded-md hover:bg-slate-700 text-sm font-semibold transition"
+              className="mt-6 w-full bg-green-900 text-white py-2 rounded-md hover:bg-green-700 text-sm font-semibold transition"
+            >
+              Request
+            </button>
+
+              <button
+              onClick={onClose}
+              className="mt-6 w-full bg-slate-950 text-white py-2 rounded-md hover:bg-gray-700 text-sm font-semibold transition"
             >
               Close
+            </button>
+            </div>
+            <button
+              onClick={handleDelete}
+              className="mt-6 w-full bg-red-900 text-white py-2 rounded-md hover:bg-red-700 text-sm font-semibold transition"
+            >
+              Delete
             </button>
           </div>
         </div>

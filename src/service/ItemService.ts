@@ -36,13 +36,13 @@ const GetAllItems = async () => {
       }
 }
 
-const DeleteItem = async(itemId :String) =>{
+const DeleteItem = async(itemId :any) =>{
   try{
     console.log(itemId)
     const response  =  await axios.delete(
         `${baseURL}?itemId=${itemId}`);
     console.log(response.data)
-    return response.data;
+    return response;
     
   }catch(error){
       console.error("Failed to delete the data",error);

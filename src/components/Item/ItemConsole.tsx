@@ -25,7 +25,7 @@ const ItemConsole = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [addModalOpen, setAddModalOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [cardsPerRow, setCardsPerRow] = useState(3); 
+    const [cardsPerRow, setCardsPerRow] = useState(3);
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
 
@@ -92,7 +92,7 @@ const ItemConsole = () => {
                 />
 
                 <button onClick={() => setAddModalOpen(true)} className="px-4 py-2 bg-black text-white text-sm font-bold rounded-md hover:bg-black/70 transition-colors duration-200"
->
+                >
                     + Add Item
                 </button>
             </div>
@@ -127,7 +127,12 @@ const ItemConsole = () => {
             )}
 
             {/* Modal */}
-            <ItemModel open={modalOpen} onClose={handleCloseModal} itemId={selectedItemId} />
+            <ItemModel open={modalOpen}
+                onClose={() => {
+                    handleCloseModal();
+                    loadData(); // Refresh data after item is added
+                }}
+                itemId={selectedItemId} />
         </div>
     );
 };
