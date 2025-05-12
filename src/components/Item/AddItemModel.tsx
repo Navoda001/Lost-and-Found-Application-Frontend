@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { AddItem } from "../../service/ItemService";
+import { Listbox } from "@headlessui/react";
 
 interface AddItemModalProps {
   open: boolean;
@@ -20,11 +21,11 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, onClose }) => {
     itemName: "",
     itemDescription: "",
     location: "",
-    itemStatus: "",
+    itemStatus: "LOST",
     foundDate: "",
     image: "",
   });
-
+  const statusOptions = ["LOST", "FOUND"];
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
@@ -74,7 +75,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, onClose }) => {
       itemName: "",
       itemDescription: "",
       location: "",
-      itemStatus: "",
+      itemStatus: "LOST",
       foundDate: "",
       image: "",
     });
@@ -100,14 +101,26 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, onClose }) => {
           <input name="itemName" value={formData.itemName} onChange={handleChange} placeholder="Item Name" className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-md focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-200" />
           <textarea name="itemDescription" value={formData.itemDescription} onChange={handleChange} placeholder="Item Description" className="w-full mt-2 px-4 py-2 border border-gray-300 rounded-xl shadow-md focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-200" />
           <input name="location" value={formData.location} onChange={handleChange} placeholder="Location" className="w-full mt-2 px-4 py-2 border border-gray-300 rounded-xl shadow-md focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-200" />
-          <select
-            name="itemStatus"
-            value={formData.itemStatus}
-            onChange={handleChange}
-            className="w-full mt-2 px-4 py-2 border border-gray-300 rounded-xl shadow-md focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-200" >
-            <option value="LOST">LOST</option>
-            <option value="FOUND">FOUND</option>
-          </select>
+          <Listbox value={formData.itemStatus} onChange={(value) => setFormData({ ...formData, itemStatus: value })}>
+            <div className="relative w-full">
+              <Listbox.Button className="w-full py-2 px-4 border border-gray-300 rounded-xl text-left shadow-md">
+                {formData.itemStatus}
+              </Listbox.Button>
+              <Listbox.Options className="absolute mt-1 w-full bg-white border rounded-md shadow-lg z-10">
+                {statusOptions.map((status) => (
+                  <Listbox.Option
+                    key={status}
+                    value={status}
+                    className={({ active }) =>
+                      `cursor-pointer rounded-xl px-4 py-2 ${active ? "bg-gray-900 text-white" : "bg-white"}`
+                    }
+                  >
+                    {status}
+                  </Listbox.Option>
+                ))}
+              </Listbox.Options>
+            </div>
+          </Listbox>
 
           {/* Found Date Input: Show only if status is FOUND */}
           <div className="flex flex-col gap-1">

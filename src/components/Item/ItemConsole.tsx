@@ -92,7 +92,7 @@ const ItemConsole = () => {
                 />
 
                 <button onClick={() => setAddModalOpen(true)} className="px-4 py-2 bg-black text-white text-sm font-bold rounded-md hover:bg-black/70 transition-colors duration-200"
-                >
+>
                     + Add Item
                 </button>
             </div>
