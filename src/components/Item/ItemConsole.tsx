@@ -116,7 +116,7 @@ const ItemConsole = () => {
                             key={status}
                             onClick={() => setFilterStatus(status as any)}
                             className={`px-4 py-2 text-sm font-medium rounded-md border 
-          ${filterStatus === status ? 'bg-black text-white' : 'bg-white text-black'} 
+          ${filterStatus === status ? 'bg-black text-white hover:text-black ' : 'bg-white text-black'} 
           hover:bg-gray-200 transition`}
                         >
                             {status}
