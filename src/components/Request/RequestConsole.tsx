@@ -88,6 +88,9 @@ const RequestConsole = () => {
 
     return (
         <div className="p-6 z-0">
+            <h1 className="text-[60px] font-bold font-serif uppercase text-center text-[#2c3e50] ">
+                Requests
+            </h1>
             {/* Card Container */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
                

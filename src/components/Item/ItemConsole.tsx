@@ -89,6 +89,12 @@ const ItemConsole = () => {
 
     return (
         <div className="p-6 z-0">
+
+            <h1 className="text-[60px] font-bold font-serif uppercase text-center text-[#2c3e50] ">
+                Items
+            </h1>
+
+
             {/* Card Container */}
             {/*add new Item */}
 
@@ -108,8 +114,8 @@ const ItemConsole = () => {
                 </button>
             </div>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
-               
-               {/* Filter Buttons */}
+
+                {/* Filter Buttons */}
                 <div className="flex flex-wrap gap-2">
                     {['ALL', 'LOST', 'FOUND', 'CLAIMED'].map(status => (
                         <button
@@ -132,7 +138,7 @@ const ItemConsole = () => {
                     onChange={e => setSearchTerm(e.target.value)}
                     className="px-4 py-2 border rounded-md shadow-sm w-full md:w-[50%] focus:outline-none focus:ring-2 focus:ring-black"
                 />
-                
+
             </div>
 
 
