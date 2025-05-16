@@ -1,24 +1,26 @@
 import React from "react";
+import { NavLink } from "react-router";
+
+
 
 const NavBar: React.FC = () => {
-const [openNav, setOpenNav] = React.useState(false);
-const [activeNav, setActiveNav] = React.useState("Items");
+  const [openNav, setOpenNav] = React.useState(false);
+  const navItems = ["Items", "Requests", "Account"];
 
-const navItems = ["Items", "Requests", "Account"];
-
-const navList = (
+  const navList = (
   <ul className="flex flex-col gap-2 mt-4 mb-4 lg:mt-0 lg:mb-0 lg:flex-row lg:items-center lg:gap-6">
     {navItems.map((item) => (
       <li key={item}>
-        <a
-          href="#"
-          onClick={() => setActiveNav(item)}
-          className={`text-blue-gray-700 font-medium transition-colors hover:text-blue-600 ${
-            activeNav === item ? "underline font-semibold text-blue-800" : ""
-          }`}
+        <NavLink
+          to={`/${item.toLowerCase()}`}
+          className={({ isActive }) =>
+            `text-blue-gray-700 font-medium transition-colors hover:text-blue-600 ${
+              isActive ? "underline font-semibold text-blue-800" : ""
+            }`
+          }
         >
           {item}
-        </a>
+        </NavLink>
       </li>
     ))}
   </ul>
@@ -30,7 +32,7 @@ const navList = (
       {/* Navbar */}
       <div className="sticky top-0 z-50 w-full bg-white/90 shadow-md px-4 py-4 lg:px-8">
         <div className="flex items-center justify-between">
-          <a href="#" className="text-lg font-semibold text-gray-800">
+          <a href="/" className="text-lg font-semibold text-gray-800">
             TrackMyItem
           </a>
           <div className="flex items-center gap-4">
