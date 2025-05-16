@@ -6,7 +6,7 @@ import { AddRequest } from "../../service/RequestService";
 interface ItemModelProps {
   open: boolean;
   onClose: () => void;
-  refreshData: () => Promise<void>; // 👈 async function
+  refreshData: () => Promise<void>; 
   itemId: string | null;
 }
 
@@ -40,12 +40,11 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-
-  useEffect(() => {
-    const fetchBase64Image = async () => {
+const fetchData = async () => {
       if (!itemId) return;
 
       const result: AllItem = await GetItemById(itemId);
+      console.log("Fetched item data:", result);
       setItemData(result);
 
       if (result.image) {
@@ -53,8 +52,11 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
       }
     };
 
-    fetchBase64Image();
-  }, [itemId]);
+  useEffect(() => {
+    
+   fetchData();
+  
+  }, [itemId,open]);
 
   const formatDate = (rawDate: string | null | undefined): string => {
     if (!rawDate) return "N/A";
@@ -135,6 +137,7 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
           text: "Item is set to Found!",
           icon: "success"
         });
+        itemId="";
         await refreshData();
         onClose();
       } else {

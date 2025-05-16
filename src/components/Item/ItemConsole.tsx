@@ -27,6 +27,8 @@ const ItemConsole = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [cardsPerRow, setCardsPerRow] = useState(3);
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+    const [filterStatus, setFilterStatus] = useState<'ALL' | 'LOST' | 'FOUND' | 'CLAIMED'>('ALL');
+    const [searchTerm, setSearchTerm] = useState('');
 
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -74,6 +76,16 @@ const ItemConsole = () => {
     const totalPages = Math.ceil(itemData.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentItems = itemData.slice(startIndex, startIndex + itemsPerPage);
+    const filteredItems = currentItems.filter(item => {
+        const matchesStatus =
+            filterStatus === 'ALL' || item.itemStatus === filterStatus;
+
+        const matchesSearch = item.itemName
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+
+        return matchesStatus && matchesSearch;
+    });
 
     return (
         <div className="p-6 z-0">
@@ -95,9 +107,38 @@ const ItemConsole = () => {
                     + Add Item
                 </button>
             </div>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
+               
+               {/* Filter Buttons */}
+                <div className="flex flex-wrap gap-2">
+                    {['ALL', 'LOST', 'FOUND', 'CLAIMED'].map(status => (
+                        <button
+                            key={status}
+                            onClick={() => setFilterStatus(status as any)}
+                            className={`px-4 py-2 text-sm font-medium rounded-md border 
+          ${filterStatus === status ? 'bg-black text-white' : 'bg-white text-black'} 
+          hover:bg-gray-200 transition`}
+                        >
+                            {status}
+                        </button>
+                    ))}
+                </div>
 
-            <div ref={containerRef} className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
-                {currentItems.map((item, index) => (
+                {/* Search Bar */}
+                <input
+                    type="text"
+                    placeholder="Search by item name..."
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                    className="px-4 py-2 border rounded-md shadow-sm w-full md:w-[50%] focus:outline-none focus:ring-2 focus:ring-black"
+                />
+                
+            </div>
+
+
+
+            <div ref={containerRef} className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                {filteredItems.map((item, index) => (
                     <div key={`${item.itemId}-${item.itemStatus}`} ref={index === 0 ? cardRef : null}>
                         <ItemCard
                             itemId={item.itemId}
@@ -106,6 +147,7 @@ const ItemConsole = () => {
                     </div>
                 ))}
             </div>
+
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
