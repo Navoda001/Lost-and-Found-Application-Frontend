@@ -46,4 +46,20 @@ const GetAllRequestItems = async () => {
       }
 }
 
-export{AddRequest,GetRequestById,GetAllRequestItems,GetAllRequestsByIdItemId}
+const UpdateRequest = async(requestId :any,request:any) =>{
+
+  try{
+    const response  =  await axios.patch(
+        `${baseURL}?requestId=${requestId}`,
+        request
+        );
+    console.log(response)
+    return response;
+    
+  }catch(error){
+      console.error("Failed to get the data",error);
+      throw error
+  }   
+}
+
+export{AddRequest,GetRequestById,GetAllRequestItems,GetAllRequestsByIdItemId,UpdateRequest}
