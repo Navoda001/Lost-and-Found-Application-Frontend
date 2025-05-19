@@ -21,9 +21,7 @@ const RequestConsole = () => {
     }
 
     const [itemData, setItemData] = useState<AllItem[]>([]);
-    const [selectedItem, setSelectedItem] = useState<AllItem | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
-    const [addModalOpen, setAddModalOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [cardsPerRow, setCardsPerRow] = useState(3);
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
@@ -68,7 +66,7 @@ const RequestConsole = () => {
 
     const handleCloseModal = () => {
         setModalOpen(false);
-        setSelectedItem(null);
+        setSelectedItemId(null);
     };
 
     const itemsPerPage = cardsPerRow * rowsPerPage;

@@ -58,9 +58,17 @@ const ItemCard: React.FC<ItemCardProps> = ({
 
       {/* Card Body */}
       <div className="p-4">
-        <p className={`text-md font-bold mt-2  mb-2 text-left ${itemData?.itemStatus === "FOUND" ? "text-yellow-500" : itemData?.itemStatus === "LOST" ? "text-red-500" : "text-green-500"}`}>
-          {itemData?.itemStatus}
-        </p>
+         <div className="w-full text-left mb-2">
+          <p className={`inline text-sm font-semibold rounded-full px-4 py-1
+    ${itemData?.itemStatus === "CLAIMED"
+              ? "bg-green-200 text-green-800"
+              : itemData?.itemStatus === "LOST"
+                ? "bg-red-200 text-red-800"
+                : "bg-yellow-200 text-yellow-800"
+            }`}>
+            {itemData?.itemStatus}
+          </p>
+        </div>
         <h5 className="text-xl text-left font-semibold text-gray-800 mb-1">
           {itemData?.itemName}
         </h5>

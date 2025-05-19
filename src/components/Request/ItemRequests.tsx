@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { GetAllRequestsByIdItemId } from "../../service/RequestService";
+import RequestAction from "./RequestAction";
 
 interface ItemRequestProps {
   open: boolean;
@@ -9,18 +10,19 @@ interface ItemRequestProps {
 }
 
 interface Request {
+  requestId: string;
   itemId: string;
   itemName: string;
   userId: string;
   userName: string;
   requestStatus: string;
   requestDate: [number, number, number];
-  email: string;
-  profileImgUrl: string;
+  message: string;
+  decisionDate:string;
 }
 
 
-const TABLE_HEAD = ["UserId", "UserName", "Status", "RequestDate", ""];
+const TABLE_HEAD = ["Request Id", "User Id", "User Name", "Status", "Request Date", ""];
 
 const ItemRequests: React.FC<ItemRequestProps> = ({
   open,
@@ -31,6 +33,9 @@ const ItemRequests: React.FC<ItemRequestProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<"ALL" | "PENDING" | "APPROVED" | "REJECTED">("ALL");
   const [requestData, setRequestData] = useState<Request[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [selectedRow, setSelectedRow] = useState<Request | null>(null);
 
   const getRequestData = async () => {
     if (!itemId) return;
@@ -68,6 +73,14 @@ const ItemRequests: React.FC<ItemRequestProps> = ({
     return date.toISOString().split("T")[0].replace(/-/g, "/");
   };
 
+  const handleAction = (request: Request) => {
+    setSelectedRow(request);
+    setModalOpen(true);
+  }
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedUserId(null);
+  }
 
   return (
     <div
@@ -117,16 +130,16 @@ const ItemRequests: React.FC<ItemRequestProps> = ({
           />
         </div>
 
-       {requestData.length > 0 && (
-  <div className="mb-6 text-start space-y-1">
-    <p className="text-lg md:text-xl font-semibold text-gray-800">
-      Item ID: <span className="font-normal text-gray-700">{requestData[0].itemId}</span>
-    </p>
-    <p className="text-lg md:text-xl font-semibold text-gray-800">
-      Item Name: <span className="font-normal text-gray-700">{requestData[0].itemName}</span>
-    </p>
-  </div>
-)}
+        {requestData.length > 0 && (
+          <div className="mb-6 text-start space-y-1">
+            <p className="text-lg md:text-xl font-semibold text-gray-800">
+              Item ID: <span className="font-normal text-gray-700">{requestData[0].itemId}</span>
+            </p>
+            <p className="text-lg md:text-xl font-semibold text-gray-800">
+              Item Name: <span className="font-normal text-gray-700">{requestData[0].itemName}</span>
+            </p>
+          </div>
+        )}
 
 
 
@@ -149,6 +162,7 @@ const ItemRequests: React.FC<ItemRequestProps> = ({
             <tbody>
               {filteredRows.map((row, index) => (
                 <tr key={index} className="border-b text-left hover:bg-gray-50 transition">
+                  <td className="px-4 py-3 font-medium text-md text-gray-800">{row.requestId}</td>
                   <td className="px-4 py-3 font-medium text-md text-gray-800">{row.userId}</td>
                   <td className="px-4 py-3 font-medium text-md text-gray-800">
                     {row.userName}
@@ -168,15 +182,26 @@ const ItemRequests: React.FC<ItemRequestProps> = ({
                   <td className="px-4 py-3 font-medium text-md text-gray-700">
                     {formatDate(row.requestDate)}
                   </td>
-                  <td className=" py-3 text-left">
-                    <button className="px-4 py-2 text-sm font-medium rounded-md border transition bg-black text-white hover:bg-white hover:text-black">
-                      Edit
-                    </button>
+                  <td className="py-3 text-left">
+                    
+                      <button
+                        onClick={() => handleAction(row)}
+                        className="px-4 py-2 text-sm font-medium rounded-md border transition bg-black text-white hover:bg-white hover:text-black"
+                      >
+                     {row.requestStatus === "pending" ? "Action" : "View"}
+                      </button>
                   </td>
+
                 </tr>
               ))}
             </tbody>
           </table>
+
+          <RequestAction
+            openRequest={modalOpen}
+            request={selectedRow}
+            onClose={handleCloseModal}
+          />
         </div>
       </div>
     </div>

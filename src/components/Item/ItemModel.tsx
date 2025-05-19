@@ -179,7 +179,7 @@ const fetchData = async () => {
 
       setRequestData({
         itemId: itemData?.itemId ?? "",
-        userId: "U002"
+        userId: "U001"
       });
       console.log("Request data:", requestData);
       const response = await AddRequest(requestData);
@@ -266,7 +266,7 @@ const fetchData = async () => {
               <div className="flex col-span-3 space-x-1">
                 <button
                   onClick={handleRequest}
-                  className={`mt-6 w-full py-2 rounded-md text-sm font-semibold transition ${isLoading ? 'bg-green-800 cursor-not-allowed text-white' : 'bg-green-900 hover:bg-green-700 text-white'
+                  className={`mt-6 w-full py-2 rounded-md text-sm font-semibold transition ${isLoading ? 'bg-green-200 text-green-800 cursor-not-allowed' : 'bg-green-200 text-green-800 hover:bg-green-300 '
                     }`}
                   disabled={isLoading} // Disables the button when loading
                 >
@@ -285,8 +285,8 @@ const fetchData = async () => {
                   onClick={handleClaim}
                   disabled={isLoading}
                   className={`mt-6 w-full py-2 rounded-md text-sm font-semibold transition ${isLoading
-                    ? "bg-yellow-600 cursor-not-allowed text-white"
-                    : "bg-yellow-700 hover:bg-yellow-600 text-white"
+                    ? "bg-yellow-300 cursor-not-allowed text-yellow-800"
+                    : "bg-yellow-200 text-yellow-800 hover:bg-yellow-300 "
                     }`}
                 >
                   {isLoading ? "Processing..." : "Found"}
@@ -305,8 +305,8 @@ const fetchData = async () => {
               onClick={handleDelete}
               disabled={isDeleting}
               className={`mt-4 w-full py-2 rounded-md text-sm font-semibold transition ${isDeleting
-                ? "bg-red-800 cursor-not-allowed text-white"
-                : "bg-red-900 hover:bg-red-800 text-white"
+                ? "bg-red-300 cursor-not-allowed text-red-800"
+                : "bg-red-200 text-red-800 hover:bg-red-300"
                 }`}
             >
               {isDeleting ? "Deleting..." : "Delete"}
