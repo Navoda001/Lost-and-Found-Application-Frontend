@@ -14,21 +14,25 @@ const navList = (
         <NavLink
           to={`/${item.toLowerCase()}`}
           className={({ isActive }) =>
-            `relative px-2 py-1 text-base font-medium transition duration-300 ease-in-out
-            ${
-              isActive
-                ? "text-black font-semibold after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-full after:bg-black"
-                : "text-gray-700 hover:text-black hover:after:content-[''] hover:after:absolute hover:after:left-0 hover:after:-bottom-1 hover:after:h-[2px] hover:after:w-full hover:after:bg-black"
-            }`
+            `group relative px-2 py-1 text-base font-medium transition-colors duration-300
+             ${isActive ? "text-black font-semibold" : "text-gray-700 hover:text-black"}`
           }
         >
-          {item}
+          {({ isActive }) => (
+            <>
+              {item}
+              <span
+                className={`absolute bottom-0 left-0 w-full h-0.5 bg-black transform transition-transform duration-300 origin-left
+                  ${isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"}
+                `}
+              ></span>
+            </>
+          )}
         </NavLink>
       </li>
     ))}
   </ul>
 );
-
 
 
   return (
