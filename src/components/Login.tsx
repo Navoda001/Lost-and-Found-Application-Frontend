@@ -36,7 +36,12 @@ const Login: React.FC = () => {
             if (email === "test@example.com" && password === "123456") {
                 setCurrentUser({ email });
                 setUserLoggedIn(true);
-                Swal.fire("Success", "Logged in successfully", "success");
+                Swal.fire({
+                    title: "Success!",
+                    confirmButtonColor: "#000",
+                    text: "Logged in successfully.",
+                    icon: "success"
+                });
                 navigate("/items");
             } else {
                 throw new Error("Invalid credentials");

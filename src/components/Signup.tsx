@@ -54,7 +54,12 @@ const SignUp: React.FC = () => {
             const response = await AddUser(user);
 
             if (response.status === 200 || response.status === 201) {
-                Swal.fire("Success", "Account created successfully", "success");
+                Swal.fire({
+                          title: "Success!",
+                          confirmButtonColor: "#000",
+                          text: "Account created successfully.",
+                          icon: "success"
+                        });
             setUser({ firstName: "", lastName: "", phoneNumber: "", email: "", password: "",role: "USER" });
             setPassword2("");
             navigate("/"); // if using React Router
