@@ -6,7 +6,7 @@ import { AddRequest } from "../../service/RequestService";
 interface ItemModelProps {
   open: boolean;
   onClose: () => void;
-  refreshData: () => Promise<void>; 
+  refreshData: () => Promise<void>;
   itemId: string | null;
 }
 
@@ -35,28 +35,28 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
   const [itemData, setItemData] = useState<AllItem | null>(null);
   const [requestData, setRequestData] = useState<AllRequest>({
     itemId: " ",
-    userId: "U001",
+    userId: "U002",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-const fetchData = async () => {
-      if (!itemId) return;
+  const fetchData = async () => {
+    if (!itemId) return;
 
-      const result: AllItem = await GetItemById(itemId);
-      console.log("Fetched item data:", result);
-      setItemData(result);
+    const result: AllItem = await GetItemById(itemId);
+    console.log("Fetched item data:", result);
+    setItemData(result);
 
-      if (result.image) {
-        setImgSrc(result.image); // base64 image
-      }
-    };
+    if (result.image) {
+      setImgSrc(result.image); // base64 image
+    }
+  };
 
   useEffect(() => {
-    
-   fetchData();
-  
-  }, [itemId,open]);
+
+    fetchData();
+
+  }, [itemId, open]);
 
   const formatDate = (rawDate: string | null | undefined): string => {
     if (!rawDate) return "N/A";
@@ -137,7 +137,7 @@ const fetchData = async () => {
           text: "Item is set to Found!",
           icon: "success"
         });
-        itemId="";
+        itemId = "";
         await refreshData();
         onClose();
       } else {
@@ -190,6 +190,10 @@ const fetchData = async () => {
           confirmButtonColor: "#000",
           text: "Your request has been submitted successfully.",
           icon: "success"
+        });
+        setRequestData({
+          itemId: "",
+          userId: ""
         });
         onClose();
       } else if (response.status === 500) {
@@ -250,8 +254,22 @@ const fetchData = async () => {
               {itemData?.itemName}
             </h3>
             <p className="text-sm text-slate-600 mb-4">{itemData?.itemDescription}</p>
-            <ul className="text-sm text-slate-700 space-y-1">
-              <li><span className="font-semibold">Status:</span> {itemData?.itemStatus}</li>
+            <ul className="text-sm text-slate-700 space-y-1 text-left">
+              <li className="mb-2">
+                <span className="font-semibold">Status:</span>
+                <span
+                  className={`ml-2 px-2 py-1 text-sm font-semibold rounded-full 
+      ${itemData?.itemStatus === "CLAIMED"
+                      ? " text-green-800"
+                      : itemData?.itemStatus === "LOST"
+                        ? " text-red-800"
+                        : " text-yellow-800"
+                    }`}
+                >
+                  {itemData?.itemStatus}
+                </span>
+              </li>
+
               <li><span className="font-semibold">Location:</span> {itemData?.location}</li>
               <li><span className="font-semibold">Reported By:</span> {itemData?.reportedBy}</li>
               <li><span className="font-semibold">Reported Date:</span> {formatDate(itemData?.reportedDate ? new Date(itemData.reportedDate[0], itemData.reportedDate[1] - 1, itemData.reportedDate[2]).toISOString() : null)}</li>
@@ -262,45 +280,41 @@ const fetchData = async () => {
             </ul>
 
 
-            {itemData?.itemStatus === "FOUND" ? (
-              <div className="flex col-span-3 space-x-1">
+            <div className="flex col-span-3 space-x-2 mt-6">
+              {itemData?.itemStatus === "FOUND" && (
                 <button
                   onClick={handleRequest}
-                  className={`mt-6 w-full py-2 rounded-md text-sm font-semibold transition ${isLoading ? 'bg-green-200 text-green-800 cursor-not-allowed' : 'bg-green-200 text-green-800 hover:bg-green-300 '
-                    }`}
-                  disabled={isLoading} // Disables the button when loading
+                  disabled={isLoading}
+                  className={`w-full py-2 rounded-md text-sm font-semibold transition 
+        ${isLoading
+                      ? "bg-green-200 text-green-800 cursor-not-allowed"
+                      : "bg-green-200 text-green-800 hover:bg-green-300"}`}
                 >
                   {isLoading ? "Requesting..." : "Request"}
                 </button>
-                <button
-                  onClick={onClose}
-                  className="mt-6 w-full bg-slate-950 text-white py-2 rounded-md hover:bg-gray-700 text-sm font-semibold transition"
-                >
-                  Close
-                </button>
-              </div>
-            ) : (
-              <div className="flex col-span-3 space-x-1">
+              )}
+
+              {itemData?.itemStatus === "LOST" && (
                 <button
                   onClick={handleClaim}
                   disabled={isLoading}
-                  className={`mt-6 w-full py-2 rounded-md text-sm font-semibold transition ${isLoading
-                    ? "bg-yellow-300 cursor-not-allowed text-yellow-800"
-                    : "bg-yellow-200 text-yellow-800 hover:bg-yellow-300 "
-                    }`}
+                  className={`w-full py-2 rounded-md text-sm font-semibold transition 
+        ${isLoading
+                      ? "bg-yellow-300 text-yellow-800 cursor-not-allowed"
+                      : "bg-yellow-200 text-yellow-800 hover:bg-yellow-300"}`}
                 >
                   {isLoading ? "Processing..." : "Found"}
                 </button>
+              )}
 
-                <button
-                  onClick={onClose}
-                  className="mt-6 w-full bg-slate-950 text-white py-2 rounded-md hover:bg-gray-700 text-sm font-semibold transition"
-                >
-                  Close
-                </button>
-              </div>
-            )}
-
+              {/* Close Button – Always visible */}
+              <button
+                onClick={onClose}
+                className="w-full bg-slate-950 text-white py-2 rounded-md hover:bg-gray-700 text-sm font-semibold transition"
+              >
+                Close
+              </button>
+            </div>
             <button
               onClick={handleDelete}
               disabled={isDeleting}
