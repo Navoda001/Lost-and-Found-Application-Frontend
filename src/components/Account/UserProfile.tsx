@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import EditProfile from './EditProfile';
+import ImageUpload from './ImageUpload';
 
 interface User {
     userId: string;
@@ -15,7 +16,7 @@ const UserProfile: React.FC = () => {
 
     const [editProfileModal, setEditProfileModal] = useState(false);
     const [user, setUser] = useState<User>({
-        userId:'',
+        userId: '',
         firstName: '',
         lastName: '',
         email: '',
@@ -23,11 +24,14 @@ const UserProfile: React.FC = () => {
         password: '',
         role: ''
     });
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [profileImage, setProfileImage] = useState('');
+    
     const handleCloseModal = () => {
         setEditProfileModal(false);
     };
 
-    const loadData =async () => {
+    const loadData = async () => {
 
     }
 
@@ -37,11 +41,41 @@ const UserProfile: React.FC = () => {
             <div className="grid grid-rows-2 items-center bg-black text-white rounded-lg p-6 gap-y-6">
                 {/* Profile Image & Button */}
                 <div className="flex flex-col items-center">
-                    <img
-                        src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                        alt="Profile"
-                        className="rounded-full border-4 border-white w-36 h-36 object-cover shadow-lg"
-                    />
+                    <div className="relative w-36 h-36">
+                        <img
+                            src={profileImage ? profileImage : 'profile.jpg' }
+                            alt="Profile"
+                            className="rounded-full border-4 border-white w-36 h-36 object-cover shadow-lg"
+                        />
+
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md hover:bg-gray-200 transition"
+                            aria-label="Upload profile image"
+                        >
+                            {/* Camera icon svg */}
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6 text-black"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M3 7h2l3-3h8l3 3h2a1 1 0 011 1v11a1 1 0 01-1 1H3a1 1 0 01-1-1V8a1 1 0 011-1z"
+                                />
+                                <circle cx="12" cy="13" r="3" />
+                            </svg>
+                        </button>
+
+                        <ImageUpload
+                            isOpen={isModalOpen}
+                            onClose={() => setIsModalOpen(false)}
+                        />
+                    </div>
                     <button
                         onClick={() => setEditProfileModal(true)}
                         className="mt-4 px-5 py-2 bg-white text-black font-semibold rounded-md hover:bg-gray-200 transition">
