@@ -18,7 +18,7 @@ interface Request {
   requestStatus: string;
   requestDate: [number, number, number];
   message: string;
-  decisionDate:string;
+  decisionDate: string;
 }
 
 
@@ -49,6 +49,12 @@ const ItemRequests: React.FC<ItemRequestProps> = ({
       getRequestData();
     }
   }, [itemId, open]);
+
+  const refreshAllData = async () => {
+    await refreshData();      // Calls main parent's loadData()
+    await getRequestData();   // Calls sub parent's local data loader
+  };
+
 
   const filteredRows = requestData.filter((req) => {
     const matchesStatus = filterStatus === "ALL" || req.requestStatus === filterStatus;
@@ -183,13 +189,13 @@ const ItemRequests: React.FC<ItemRequestProps> = ({
                     {formatDate(row.requestDate)}
                   </td>
                   <td className="py-3 text-left">
-                    
-                      <button
-                        onClick={() => handleAction(row)}
-                        className="px-4 py-2 text-sm font-medium rounded-md border transition bg-black text-white hover:bg-white hover:text-black"
-                      >
-                     {row.requestStatus === "pending" ? "Action" : "View"}
-                      </button>
+
+                    <button
+                      onClick={() => handleAction(row)}
+                      className="px-4 py-2 text-sm font-medium rounded-md border transition bg-black text-white hover:bg-white hover:text-black"
+                    >
+                      {row.requestStatus === "pending" ? "Action" : "View"}
+                    </button>
                   </td>
 
                 </tr>
@@ -201,6 +207,7 @@ const ItemRequests: React.FC<ItemRequestProps> = ({
             openRequest={modalOpen}
             request={selectedRow}
             onClose={handleCloseModal}
+            refreshData={refreshAllData}
           />
         </div>
       </div>
