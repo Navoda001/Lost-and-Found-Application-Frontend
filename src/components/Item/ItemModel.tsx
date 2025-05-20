@@ -177,12 +177,12 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
     try {
       setIsLoading(true); // Optional: show loading UI state
 
-      setRequestData({
+      const requestPayload = {
         itemId: itemData?.itemId ?? "",
-        userId: "U001"
-      });
-      console.log("Request data:", requestData);
-      const response = await AddRequest(requestData);
+        userId: "U003"
+      };
+      console.log("Request data:", requestPayload);
+      const response = await AddRequest(requestPayload);
 
       if (response.status === 200 || response.status === 201) {
         Swal.fire({
