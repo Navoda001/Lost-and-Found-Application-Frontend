@@ -6,6 +6,8 @@ import RequestConsole from './components/Request/RequestConsole';
 import SignUp from './components/Signup';
 import Login from './components/Login';
 import Home from './components/Home';
+import Profile from './components/Account/UserProfile';
+
 
 
 function AppWrapper() {
@@ -25,6 +27,7 @@ function AppWrapper() {
         <Route path='/login' element={<Login/>} />
         <Route path="/items" element={<ItemConsole />} />
         <Route path="/requests" element={<RequestConsole />} />
+        <Route path="/account" element={<Profile/>} />
         
       </Routes>
     </>
