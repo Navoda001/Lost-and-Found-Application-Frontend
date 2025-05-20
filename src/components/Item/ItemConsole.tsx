@@ -61,6 +61,15 @@ const ItemConsole = () => {
         return () => window.removeEventListener("resize", updateCardsPerRow);
     }, []);
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filterStatus, searchTerm]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [cardsPerRow]);
+
+
     const handleReadMore = (itemId: string) => {
         setSelectedItemId(itemId);
         setModalOpen(true);
@@ -72,11 +81,7 @@ const ItemConsole = () => {
         setSelectedItem(null);
     };
 
-    const itemsPerPage = cardsPerRow * rowsPerPage;
-    const totalPages = Math.ceil(itemData.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentItems = itemData.slice(startIndex, startIndex + itemsPerPage);
-    const filteredItems = currentItems.filter(item => {
+    const filteredItems = itemData.filter(item => {
         const matchesStatus =
             filterStatus === 'ALL' || item.itemStatus === filterStatus;
 
@@ -86,6 +91,13 @@ const ItemConsole = () => {
 
         return matchesStatus && matchesSearch;
     });
+
+
+    const itemsPerPage = cardsPerRow * rowsPerPage;
+    const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentItems = filteredItems.slice(startIndex, startIndex + itemsPerPage);
+
 
     return (
         <div className="p-6 z-0">
@@ -144,7 +156,7 @@ const ItemConsole = () => {
 
 
             <div ref={containerRef} className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {filteredItems.map((item, index) => (
+                {currentItems.map((item, index) => (
                     <div key={`${item.itemId}-${item.itemStatus}`} ref={index === 0 ? cardRef : null}>
                         <ItemCard
                             itemId={item.itemId}
