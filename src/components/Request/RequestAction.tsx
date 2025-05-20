@@ -24,12 +24,14 @@ interface RequestActionProps {
     openRequest: boolean;
     request: Request | null;
     onClose: () => void;
+    refreshData: () => Promise<void>;
 }
 
 const RequestAction: React.FC<RequestActionProps> = ({
     openRequest,
     request,
     onClose,
+    refreshData
 }) => {
 
     const [isApproving, setIsApproving] = useState(false);
@@ -78,6 +80,7 @@ const RequestAction: React.FC<RequestActionProps> = ({
                     icon: "success",
                     confirmButtonColor: "#000"
                 });
+               await refreshData();
                 onClose();
             } else if (response.status === 400) {
                 Swal.fire({
@@ -149,6 +152,7 @@ const RequestAction: React.FC<RequestActionProps> = ({
                     icon: "success",
                     confirmButtonColor: "#000",
                 });
+                await refreshData();
                 onClose();
             } else if (response.status === 400) {
                 Swal.fire({
@@ -193,6 +197,20 @@ const RequestAction: React.FC<RequestActionProps> = ({
         }
     };
 
+    const formatDate = (rawDate: string | [number, number, number] | null | undefined): string => {
+        if (!rawDate) return "N/A";
+
+        // Handle LocalDate serialized as [YYYY, MM, DD]
+        if (Array.isArray(rawDate)) {
+            const [year, month, day] = rawDate;
+            return `${year}/${String(month).padStart(2, "0")}/${String(day).padStart(2, "0")}`;
+        }
+
+        const date = new Date(rawDate);
+        if (isNaN(date.getTime())) return rawDate.toString();
+
+        return date.toISOString().split("T")[0].replace(/-/g, "/");
+    };
 
     return (
         <div
@@ -270,8 +288,12 @@ const RequestAction: React.FC<RequestActionProps> = ({
                                     ? " text-red-800"
                                     : " text-yellow-800"
                                 }`}>{request?.requestStatus}</span></p>
-                            <p className="text-sm text-gray-600 mb-3">Message: {request?.message}</p>
-                            <p className="text-sm text-gray-600 mb-3">decisionDate: {request?.message}</p>
+                            {request?.message?.trim() && (
+                                <p className="text-sm text-gray-600 mb-3">
+                                    Message: {request.message}
+                                </p>
+                            )}
+                            <p className="text-sm text-gray-600 mb-3">Decision Date: {formatDate(request?.decisionDate)}</p>
                         </div>
                     </>
                 )}
