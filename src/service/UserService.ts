@@ -12,4 +12,14 @@ const AddUser = async (user: any) => {
   }
 };
 
-export {AddUser}
+const GetUserById = async (userId:string) => {
+   //get the items
+      try{
+        const response = await  axios.get(  `${baseURL}?userId=${userId}`)
+        return response.data
+      }catch(error){
+        console.error("Failed to get the data",error);
+        throw error
+      }
+}
+export {AddUser,GetUserById}

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import Swal from 'sweetalert2'
 import { UpdateRequest } from '../../service/RequestService';
+import { GetUserById } from '../../service/UserService';
 
 interface Request {
     requestId: string;
@@ -20,6 +21,13 @@ interface Response {
     requestStatus: string;
 }
 
+interface User {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+}
+
 interface RequestActionProps {
     openRequest: boolean;
     request: Request | null;
@@ -36,10 +44,33 @@ const RequestAction: React.FC<RequestActionProps> = ({
 
     const [isApproving, setIsApproving] = useState(false);
     const [isRejecting, setIsRejecting] = useState(false);
+    const [userData, setUserData] = useState<User>({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+    })
     const [responseData, setResponseData] = useState<Response>({
         message: '',
         requestStatus: '',
     });
+
+    const FetchUser = async () => {
+        if (!request?.userId) return;
+        console.log("userId", request.userId)
+        const response = await GetUserById(request.userId);
+        setUserData(response);
+        console.log("user", userData)
+    };
+
+
+    useEffect(() => {
+
+        if (openRequest) {
+            FetchUser();
+        }
+
+    }, [openRequest, request]);
 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -80,7 +111,7 @@ const RequestAction: React.FC<RequestActionProps> = ({
                     icon: "success",
                     confirmButtonColor: "#000"
                 });
-               await refreshData();
+                await refreshData();
                 onClose();
             } else if (response.status === 400) {
                 Swal.fire({
@@ -233,9 +264,20 @@ const RequestAction: React.FC<RequestActionProps> = ({
                     <>
                         {/* Header */}
                         <h2 className="text-xl font-bold text-gray-800 mb-2">Request Action</h2>
-                        <p className="text-sm text-gray-600 mb-4">
+                        <div className='text-left'>
+                            <p className="text-sm text-gray-600 mb-4">
                             Request ID: <span className="font-medium text-black">{request?.requestId}</span>
                         </p>
+                        <p className="text-sm text-gray-600 mb-4">
+                            User Name: <span className="font-medium text-black">{userData.firstName}{' '}{userData.lastName}</span>
+                        </p>
+                        <p className="text-sm text-gray-600 mb-4">
+                            Phone Number: <span className="font-medium text-black">{userData.phoneNumber}</span>
+                        </p>
+                        <p className="text-sm text-gray-600 mb-4">
+                            Email: <span className="font-medium text-black">{userData.email}</span>
+                        </p>
+                        </div>
 
                         {/* Message Input */}
                         <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
