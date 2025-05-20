@@ -53,10 +53,14 @@ const SignUp: React.FC = () => {
         try {
             const response = await AddUser(user);
 
-            Swal.fire("Success", "Account created successfully", "success");
+            if (response.status === 200 || response.status === 201) {
+                Swal.fire("Success", "Account created successfully", "success");
             setUser({ firstName: "", lastName: "", phoneNumber: "", email: "", password: "",role: "USER" });
             setPassword2("");
             navigate("/"); // if using React Router
+            }else{
+                setError("Failed to create account. Please try again.");
+            }
 
 
         } catch (error: any) {
