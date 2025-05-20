@@ -4,6 +4,7 @@ import { GetItemById } from "../../service/ItemService";
 
 interface ItemCardProps {
   itemId: string;
+  requestCount: number;
   onReadMore: () => void;
 }
 
@@ -14,6 +15,7 @@ interface AllItem {
   location: string;
   itemStatus: string;
   reportedDate: [number, number, number];
+  requestCount: number;
   image: string;
   foundBy?: string;
   foundDate?: string;
@@ -25,6 +27,7 @@ interface AllItem {
 
 const ItemCard: React.FC<ItemCardProps> = ({
   itemId,
+  requestCount,
   onReadMore,
 }) => {
 
@@ -36,7 +39,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
     const fetchBase64Image = async () => {
       const result: AllItem = await GetItemById(itemId);
       setItemData(result);
-
+      console.log("Items loaded:", itemData);
       if (result.image) {
         setImgSrc(result.image); // Already includes data:image/jpeg;base64,...
       }
@@ -79,6 +82,10 @@ const ItemCard: React.FC<ItemCardProps> = ({
         </p>
         <p className="text-gray-500 text-xs text-left">Location: {itemData?.location}</p>
 
+
+        <p className="text-gray-500 text-xs font-semibold mt-3 text-left">
+          Requests: {requestCount}
+        </p>
 
       </div>
 
