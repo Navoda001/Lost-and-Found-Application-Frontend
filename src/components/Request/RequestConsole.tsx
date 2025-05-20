@@ -13,6 +13,7 @@ const RequestConsole = () => {
         itemStatus: string;
         reportedDate: string;
         reportedBy: string;
+        requestCount:number;
         imageUrl: string;
         foundBy: string;
         foundDate: string;
@@ -36,6 +37,8 @@ const RequestConsole = () => {
         const items = await GetAllRequestItems();
         setItemData(items);
         console.log("Items loaded:", items);
+
+        
     };
 
     useEffect(() => {
@@ -112,6 +115,7 @@ const RequestConsole = () => {
                     <div key={`${item.itemId}-${item.itemStatus}`} ref={index === 0 ? cardRef : null}>
                         <ItemCard
                             itemId={item.itemId}
+                            requestCount={item.requestCount}
                             onReadMore={() => handleReadMore(item.itemId)}
                         />
                     </div>
