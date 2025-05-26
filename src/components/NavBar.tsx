@@ -1,9 +1,19 @@
 import React from "react";
 import { NavLink } from "react-router";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "./Auth/AuthProvider";
 
 
 
 const NavBar: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const handleOnClick = () => {
+    logout();
+    navigate("/")
+  }
+
   const [openNav, setOpenNav] = React.useState(false);
   const navItems = ["Items", "Requests", "Account"];
 
@@ -45,24 +55,37 @@ const NavBar: React.FC = () => {
           </a>
 
           <div className="flex items-center gap-4">
-            {/* Desktop Nav */}
-            <div className="hidden lg:block">{navList}</div>
+
 
             {/* Desktop Auth Buttons */}
-            <div className="hidden lg:flex items-center gap-3">
-              <NavLink
-                to="/login"
-                className="inline-block px-4 py-2 text-sm font-medium text-black hover:text-white hover:bg-black border border-black rounded transition duration-300"
-              >
-                Log In
-              </NavLink>
-              <NavLink
-                to="/signup"
-                className="inline-block px-4 py-2 text-sm font-medium text-white bg-black hover:bg-gray-900 rounded transition duration-300 shadow"
-              >
-                Sign Up
-              </NavLink>
 
+            <div className="hidden lg:flex items-center gap-8">
+              {isAuthenticated ? (
+                <>
+                  {/* Desktop Nav */}
+                  <div className="hidden lg:block">{navList}</div>
+                  <button
+                    onClick={handleOnClick}
+                    className="inline-block px-4 py-2 text-sm font-medium bg-red-200 text-red-800 hover:bg-red-300 rounded transition duration-300 shadow">
+                    Log Out
+                  </button>
+                </>
+              ) : (
+                <>
+                <NavLink
+                  to="/login"
+                  className="inline-block px-4 py-2 text-sm font-medium text-black hover:text-white hover:bg-black border border-black rounded transition duration-300"
+                >
+                  Log In
+                </NavLink>
+                  <NavLink
+                    to="/signup"
+                    className="inline-block px-4 py-2 text-sm font-medium text-white bg-black hover:bg-gray-900 rounded transition duration-300 shadow"
+                  >
+                    Sign Up
+                  </NavLink>
+                </>
+              )}
             </div>
 
             {/* Mobile Toggle Button */}
@@ -88,21 +111,34 @@ const NavBar: React.FC = () => {
         {/* Mobile Nav */}
         {openNav && (
           <div className="mt-4 lg:hidden">
-            {navList}
-            <div className="flex flex-col gap-2 mt-4">
-              <NavLink
-                to="/login"
-                className="inline-block px-4 py-2 text-sm font-medium text-black hover:text-white hover:bg-black border border-black rounded transition duration-300"
-              >
-                Log In
-              </NavLink>
-              <NavLink
-                to="/signup"
-                className="inline-block px-4 py-2 text-sm font-medium text-white bg-black hover:bg-gray-900 rounded transition duration-300 shadow"
-              >
-                Sign Up
-              </NavLink>
 
+            <div className="flex flex-col gap-2 mt-4">
+
+              {isAuthenticated ? (
+                <>
+                  {navList}
+                  <button
+                    onClick={handleOnClick}
+                    className=" inline-block px-4 py-2 text-sm font-medium bg-red-200 text-red-800 hover:bg-red-300 rounded transition duration-300 shadow">
+                    Log Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <NavLink
+                    to="/login"
+                    className="inline-block px-4 py-2 text-sm font-medium text-black hover:text-white hover:bg-black border border-black rounded transition duration-300"
+                  >
+                    Log In
+                  </NavLink>
+                  <NavLink
+                    to="/signup"
+                    className="inline-block px-4 py-2 text-sm font-medium text-white bg-black hover:bg-gray-900 rounded transition duration-300 shadow"
+                  >
+                    Sign Up
+                  </NavLink>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -110,6 +146,6 @@ const NavBar: React.FC = () => {
     </div>
 
   );
-};
+}
 
 export default NavBar;

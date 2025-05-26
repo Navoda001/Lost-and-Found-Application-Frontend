@@ -1,7 +1,9 @@
 import React from "react";
 import { NavLink } from "react-router";
+import { useAuth } from "./Auth/AuthProvider";
 
 const Home: React.FC = () => {
+    const { isAuthenticated } = useAuth();
     return (
         <div className="relative min-h-screen bg-cover bg-center text-white" style={{ backgroundImage: `url('/home.jpg')` }}>
             {/* Overlay */}
@@ -17,11 +19,24 @@ const Home: React.FC = () => {
                     TrackMyItem makes it easy to report, find, and claim lost items—bringing you closer to what matters most.
                 </p>
 
-                <NavLink to='/items'>
-                <button className="px-6 py-3 bg-white text-black font-semibold rounded hover:bg-gray-100 transition">
-                    FIND IT HERE
-                </button>
-                </NavLink>
+                {isAuthenticated ? (
+                    <>
+                        <NavLink to='/items'>
+                            <button className="px-6 py-3 bg-white text-black font-semibold rounded hover:bg-gray-300 transition">
+                                FIND IT HERE
+                            </button>
+                        </NavLink>
+                    </>
+                ) : (
+                    <>
+                        <NavLink to='/login'>
+                            <button className="px-6 py-3 bg-white text-black font-semibold rounded hover:bg-gray-300 transition">
+                                Get Started
+                            </button>
+                        </NavLink>
+                    </>
+                )}
+
             </main>
         </div>
     );
