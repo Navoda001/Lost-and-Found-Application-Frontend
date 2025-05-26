@@ -1,53 +1,58 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { EyeOff, Eye } from "lucide-react";
-import mediImage from '../Images/medi.jpeg';
+import { NavLink, useNavigate } from "react-router-dom";
+import { EyeOff, Eye , ChevronLeft  } from "lucide-react";
 import Swal from "sweetalert2";
-
-// 🔧 Placeholder functions to avoid errors
-// Replace these with your actual authentication logic
-const doSignInWithGoogle = async () => {
-    return { user: { uid: "123", email: "example@gmail.com" } };
-};
-const setCurrentUser = (user: any) => {
-    console.log("User set:", user);
-};
-const setUserLoggedIn = (status: boolean) => {
-    console.log("Login status:", status);
-};
+import { LogInTask } from "../../service/AuthService";
+import { useAuth } from "./AuthProvider";
 
 const Login: React.FC = () => {
-    const navigate = useNavigate();
 
+    interface LogIn {
+        email: string;
+        password: string;
+    }
+
+    const { login } = useAuth();
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState<boolean>(false);
-    const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
+    const [user, setUser] = useState<LogIn>({
+        email: "",
+        password: ""
+    });
     const [rememberMe, setRememberMe] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
 
-    const handleEmailSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setUser({ ...user, [e.target.name]: e.target.value });
+    }
+
+    const handleLogIn = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         setError("");
 
         try {
-            // Your sign-in logic goes here
-            if (email === "test@example.com" && password === "123456") {
-                setCurrentUser({ email });
-                setUserLoggedIn(true);
+
+            const token = await LogInTask(user)
+            if (token !== null || token !== undefined) {
+                setError("");
+                console.log("Token received:", token);
+                login(token);
                 Swal.fire({
                     title: "Success!",
                     confirmButtonColor: "#000",
                     text: "Logged in successfully.",
                     icon: "success"
                 });
-                navigate("/items");
+                navigate("/");
             } else {
                 throw new Error("Invalid credentials");
+                setError("Invalid credentials");
             }
         } catch (err: any) {
             setError(err.message || "Failed to sign in");
+            setError("Failed to sign in");
         } finally {
             setLoading(false);
         }
@@ -56,6 +61,16 @@ const Login: React.FC = () => {
     return (
         <div className="background-radial-gradient overflow-hidden min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-lg w-full bg-glass rounded-lg shadow-md p-8">
+                <div className="flex justify-start text-left mb-6">
+                    <NavLink
+                        to="/"
+                        className="inline-flex items-center gap-2 text-slate-600 font-semibold hover:underline hover:text-slate-800 transition duration-150"
+                    >
+                        <ChevronLeft className="h-5 w-5" />
+                        Back to Home
+                    </NavLink>
+                </div>
+
                 <div className="text-center mb-2">
                     <h1 className="text-4xl mb-4 font-bold text-black tracking-tight">
                         TrackMyItem
@@ -73,13 +88,14 @@ const Login: React.FC = () => {
                     </div>
                 )}
 
-                <form onSubmit={handleEmailSignIn} className="space-y-6">
+                <form onSubmit={handleLogIn} className="space-y-6">
                     <div className="space-y-4">
                         <input
                             type="email"
                             placeholder="john.doe@gmail.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            name="email"
+                            value={user.email}
+                            onChange={handleOnChange}
                             className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-md focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-200"
                             required
                             disabled={loading}
@@ -88,8 +104,9 @@ const Login: React.FC = () => {
                             <input
                                 type={showPassword ? "text" : "password"}
                                 placeholder="••••••••••••••••••••"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                name="password"
+                                value={user.password}
+                                onChange={handleOnChange}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-md focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-200"
                                 required
                                 disabled={loading}
@@ -145,12 +162,12 @@ const Login: React.FC = () => {
 
                 <p className="mt-8 text-center text-sm text-gray-600">
                     Don&apos;t have an account?{" "}
-                    <a
-                        href="/SignupPage"
+                    <NavLink
+                        to="/signup"
                         className="text-slate-600 font-semibold hover:underline"
                     >
                         Sign up
-                    </a>
+                    </NavLink>
                 </p>
             </div>
         </div>

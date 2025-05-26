@@ -1,8 +1,9 @@
 import React, { useState, ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { EyeOff, Eye } from 'lucide-react';
-import { AddUser } from '../../service/UserService';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { EyeOff, Eye, ChevronLeft } from 'lucide-react';
+import { useAuth } from './AuthProvider';
 import Swal from 'sweetalert2'
+import { SignUpTask } from '../../service/AuthService';
 
 interface User {
     firstName: string;
@@ -30,6 +31,7 @@ const SignUp: React.FC = () => {
     const [error, setError] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
 
+    const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -51,19 +53,21 @@ const SignUp: React.FC = () => {
         setLoading(true);
 
         try {
-            const response = await AddUser(user);
+            const token = await SignUpTask(user);
 
-            if (response.status === 200 || response.status === 201) {
+            if (token !== null || token !== undefined) {
+                console.log("Token received:", token);
+                login(token);
                 Swal.fire({
-                          title: "Success!",
-                          confirmButtonColor: "#000",
-                          text: "Account created successfully.",
-                          icon: "success"
-                        });
-            setUser({ firstName: "", lastName: "", phoneNumber: "", email: "", password: "",role: "USER" });
-            setPassword2("");
-            navigate("/"); // if using React Router
-            }else{
+                    title: "Success!",
+                    confirmButtonColor: "#000",
+                    text: "Account created successfully.",
+                    icon: "success"
+                });
+                setUser({ firstName: "", lastName: "", phoneNumber: "", email: "", password: "", role: "USER" });
+                setPassword2("");
+                navigate("/");
+            } else {
                 setError("Failed to create account. Please try again.");
             }
 
@@ -80,6 +84,15 @@ const SignUp: React.FC = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
             <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
+                <div className="flex justify-start text-left mb-6">
+                    <NavLink
+                        to="/"
+                        className="inline-flex items-center gap-2 text-slate-600 font-semibold hover:underline hover:text-slate-800 transition duration-150"
+                    >
+                        <ChevronLeft className="h-5 w-5" />
+                        Back to Home
+                    </NavLink>
+                </div>
                 <div className="text-center mb-2">
                     <h1 className="text-4xl font-bold text-black tracking-tight">
                         TrackMyItem
@@ -221,9 +234,9 @@ const SignUp: React.FC = () => {
 
                 <p className="text-center mt-4 text-sm text-gray-600">
                     Already have an account?{' '}
-                    <a href="/LoginPage" className="text-slate-600 font-semibold hover:underline">
+                    <NavLink to="/login" className="text-slate-600 font-semibold hover:underline">
                         Login
-                    </a>
+                    </NavLink>
                 </p>
             </div>
         </div>
