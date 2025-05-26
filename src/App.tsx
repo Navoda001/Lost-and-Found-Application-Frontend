@@ -3,8 +3,8 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import ItemConsole from './components/Item/ItemConsole';
 import RequestConsole from './components/Request/RequestConsole';
-import SignUp from './components/Signup';
-import Login from './components/Login';
+import SignUp from './components/Auth/Signup';
+import Login from './components/Auth/Login';
 import Home from './components/Home';
 import Profile from './components/Account/UserProfile';
 

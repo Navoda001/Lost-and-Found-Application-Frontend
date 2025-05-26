@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EyeOff, Eye } from 'lucide-react';
-import { AddUser } from '../service/UserService';
+import { AddUser } from '../../service/UserService';
 import Swal from 'sweetalert2'
 
 interface User {
