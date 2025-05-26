@@ -2,10 +2,20 @@ import axios from 'axios'
 
 const baseURL = "http://localhost:8082/trackitem/api/v1/requests"
 
+const fetchToken = () => {
+  const token = localStorage.getItem("trackMyItemToken")
+  return "Bearer " + token
+}
+
 const AddRequest = async (request: any) => {
   console.log("Item data:", request);
   try{
-    const response = await axios.post(baseURL, request);  // Don't manually set Content-Type header
+    const response = await axios.post(baseURL, request,
+      {
+        headers: {
+          Authorization: fetchToken()
+        }
+      });  // Don't manually set Content-Type header
   return response;
   }catch(error){
     console.error("Failed to add the item",error);
@@ -16,7 +26,12 @@ const AddRequest = async (request: any) => {
 const GetRequestById = async (requestId:string) => {
    //get the items
       try{
-        const response = await  axios.get(  `${baseURL}?requestId=${requestId}`)
+        const response = await  axios.get(  `${baseURL}?requestId=${requestId}`,
+      {
+        headers: {
+          Authorization: fetchToken()
+        }
+      });
         return response.data
       }catch(error){
         console.error("Failed to get the data",error);
@@ -27,7 +42,12 @@ const GetRequestById = async (requestId:string) => {
 const GetAllRequestsByIdItemId = async (itemId:string) => {
    //get the items
       try{
-        const response = await  axios.get(  `${baseURL}/getRequestsByItemId?itemId=${itemId}`)
+        const response = await  axios.get(  `${baseURL}/getRequestsByItemId?itemId=${itemId}`,
+      {
+        headers: {
+          Authorization: fetchToken()
+        }
+      });
         return response.data
       }catch(error){
         console.error("Failed to get the data",error);
@@ -38,7 +58,12 @@ const GetAllRequestsByIdItemId = async (itemId:string) => {
 const GetAllRequestItems = async () => {
    //get the items
       try{
-        const response = await  axios.get(`${baseURL}/getAllItems`)
+        const response = await  axios.get(`${baseURL}/getAllItems`,
+      {
+        headers: {
+          Authorization: fetchToken()
+        }
+      });
         return response.data
       }catch(error){
         console.error("Failed to get the data",error);
@@ -51,7 +76,12 @@ const UpdateRequest = async(requestId :any,request:any) =>{
   try{
     const response  =  await axios.patch(
         `${baseURL}?requestId=${requestId}`,
-        request
+        request,
+      {
+        headers: {
+          Authorization: fetchToken()
+        }
+      }
         );
     console.log(response)
     return response;

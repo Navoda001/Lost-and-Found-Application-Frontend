@@ -2,11 +2,19 @@ import axios from 'axios'
 
 const baseURL = "http://localhost:8082/trackitem/api/v1/items"
 
+const fetchToken = () => {
+  const token = localStorage.getItem("trackMyItemToken")
+  return "Bearer " + token
+}
 
 const AddItem = async (item: any) => {
   console.log("Item data:", item);
   try{
-    const response = await axios.post(baseURL, item);  // Don't manually set Content-Type header
+    const response = await axios.post(baseURL, item,{
+        headers: {
+          Authorization: fetchToken()
+        }
+      });  // Don't manually set Content-Type header
   return response;
   }catch(error){
     console.error("Failed to add the item",error);
@@ -17,7 +25,12 @@ const AddItem = async (item: any) => {
 const GetItemById = async (itemId:string) => {
    //get the items
       try{
-        const response = await  axios.get(  `${baseURL}?itemId=${itemId}`)
+        const response = await  axios.get(  `${baseURL}?itemId=${itemId}`,
+      {
+        headers: {
+          Authorization: fetchToken()
+        }
+      });
         return response.data
       }catch(error){
         console.error("Failed to get the data",error);
@@ -28,7 +41,12 @@ const GetItemById = async (itemId:string) => {
 const GetAllItems = async () => {
    //get the items
       try{
-        const response = await  axios.get(`${baseURL}/getAllItems`)
+        const response = await  axios.get(`${baseURL}/getAllItems`,
+      {
+        headers: {
+          Authorization: fetchToken()
+        }
+      });
         return response.data
       }catch(error){
         console.error("Failed to get the data",error);
@@ -40,7 +58,12 @@ const DeleteItem = async(itemId :any) =>{
   try{
     console.log(itemId)
     const response  =  await axios.delete(
-        `${baseURL}?itemId=${itemId}`);
+        `${baseURL}?itemId=${itemId}`,
+      {
+        headers: {
+          Authorization: fetchToken()
+        }
+      });
     console.log(response.data)
     return response;
     
@@ -61,7 +84,12 @@ const FoundItem = async(itemId :any,status:any) =>{
   try{
     const response  =  await axios.patch(
         `${baseURL}?itemId=${itemId}`,
-        st
+        st,
+      {
+        headers: {
+          Authorization: fetchToken()
+        }
+      }
         );
     console.log(response)
     return response;
