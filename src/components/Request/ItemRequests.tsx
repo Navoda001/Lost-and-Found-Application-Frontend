@@ -19,6 +19,8 @@ interface Request {
   requestDate: [number, number, number];
   message: string;
   decisionDate: string;
+  decisionEmail:string;
+  getDecisionBy:string;
 }
 
 

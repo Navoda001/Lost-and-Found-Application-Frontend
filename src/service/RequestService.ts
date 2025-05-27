@@ -88,7 +88,7 @@ const GetAllRequestItems = async () => {
 }
 
 const UpdateRequest = async(requestId :any,request:any) =>{
-
+  console.log("Request data:", request);
   try{
     const response  =  await axios.patch(
         `${baseURL}?requestId=${requestId}`,

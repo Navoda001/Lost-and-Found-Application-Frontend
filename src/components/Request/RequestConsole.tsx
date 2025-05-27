@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { GetAllItems } from "../../service/ItemService";
 import { GetAllRequestItems } from "../../service/RequestService";
 import ItemCard from "./ItemCard";
 import ItemRequests from "./ItemRequests";
@@ -30,7 +29,7 @@ const RequestConsole = () => {
     const [filterStatus, setFilterStatus] = useState<'FOUND' | 'CLAIMED'>('FOUND');
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
-
+    
     const containerRef = useRef<HTMLDivElement>(null);
     const cardRef = useRef<HTMLDivElement>(null);
     const rowsPerPage = 3;
@@ -108,7 +107,7 @@ const RequestConsole = () => {
     const currentItems = filteredItems.slice(startIndex, startIndex + itemsPerPage);
 
     return (
-        <div className="p-6 z-0">
+        <div className="p-6 z-0 ">
             <h1 className="text-[60px] font-bold font-serif uppercase text-center text-[#2c3e50] ">
                 Requests
             </h1>

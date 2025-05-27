@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import Swal from 'sweetalert2'
+import { getUser } from '../auth/AuthProvider';
 import { UpdateRequest } from '../../service/RequestService';
 import { GetUserById } from '../../service/UserService';
+import { GetStaffById } from '../../service/StaffService';
 
 interface Request {
     requestId: string;
@@ -14,6 +16,8 @@ interface Request {
     requestDate: [number, number, number];
     message: string;
     decisionDate: string;
+    decisionEmail: string;
+    getDecisionBy: string;
 }
 
 interface Response {
@@ -50,11 +54,17 @@ const RequestAction: React.FC<RequestActionProps> = ({
         email: '',
         phoneNumber: '',
     })
+    const [staffData, setStaffData] = useState<User>({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+    })
     const [responseData, setResponseData] = useState<Response>({
         message: '',
         requestStatus: '',
     });
-
+    const decode = getUser();
     const FetchUser = async () => {
         if (!request?.userId) return;
         console.log("userId", request.userId)
@@ -63,11 +73,26 @@ const RequestAction: React.FC<RequestActionProps> = ({
         console.log("user", userData)
     };
 
+    const fetchStaffById = async () => {
+        if (!request?.getDecisionBy) return; // safety check
+
+        try {
+            const response = await GetStaffById(request.getDecisionBy);
+            setStaffData(response);
+        } catch (error) {
+            console.error("Failed to fetch staff data:", error);
+        }
+    };
+
 
     useEffect(() => {
 
         if (openRequest) {
             FetchUser();
+        }
+
+        if (request?.getDecisionBy) {
+            fetchStaffById();
         }
 
     }, [openRequest, request]);
@@ -100,7 +125,7 @@ const RequestAction: React.FC<RequestActionProps> = ({
         try {
             setIsRejecting(true);
 
-            const updatedData = { ...responseData, requestStatus: "REJECTED" };
+            const updatedData = { ...responseData, requestStatus: "REJECTED", decisionEmail: decode?.sub };
 
             const response = await UpdateRequest(request?.requestId, updatedData);
 
@@ -172,7 +197,7 @@ const RequestAction: React.FC<RequestActionProps> = ({
         try {
             setIsApproving(true);
 
-            const updatedData = { ...responseData, requestStatus: "APPROVED" };
+            const updatedData = { ...responseData, requestStatus: "APPROVED", decisionEmail: decode?.sub };
 
             const response = await UpdateRequest(request?.requestId, updatedData);
 
@@ -246,7 +271,7 @@ const RequestAction: React.FC<RequestActionProps> = ({
     return (
         <div
             onClick={onClose}
-            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 backdrop-blur-sm animate-fadeIn"
+            className="fixed h-full inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 backdrop-blur-sm animate-fadeIn"
         >
             <div
                 onClick={(e) => e.stopPropagation()}
@@ -266,17 +291,17 @@ const RequestAction: React.FC<RequestActionProps> = ({
                         <h2 className="text-xl font-bold text-gray-800 mb-2">Request Action</h2>
                         <div className='text-left'>
                             <p className="text-sm text-gray-600 mb-4">
-                            Request ID: <span className="font-medium text-black">{request?.requestId}</span>
-                        </p>
-                        <p className="text-sm text-gray-600 mb-4">
-                            User Name: <span className="font-medium text-black">{userData.firstName}{' '}{userData.lastName}</span>
-                        </p>
-                        <p className="text-sm text-gray-600 mb-4">
-                            Phone Number: <span className="font-medium text-black">{userData.phoneNumber}</span>
-                        </p>
-                        <p className="text-sm text-gray-600 mb-4">
-                            Email: <span className="font-medium text-black">{userData.email}</span>
-                        </p>
+                                Request ID: <span className="font-medium text-black">{request?.requestId}</span>
+                            </p>
+                            <p className="text-sm text-gray-600 mb-4">
+                                User Name: <span className="font-medium text-black">{userData.firstName}{' '}{userData.lastName}</span>
+                            </p>
+                            <p className="text-sm text-gray-600 mb-4">
+                                Phone Number: <span className="font-medium text-black">{userData.phoneNumber}</span>
+                            </p>
+                            <p className="text-sm text-gray-600 mb-4">
+                                Email: <span className="font-medium text-black">{userData.email}</span>
+                            </p>
                         </div>
 
                         {/* Message Input */}
@@ -336,6 +361,8 @@ const RequestAction: React.FC<RequestActionProps> = ({
                                 </p>
                             )}
                             <p className="text-sm text-gray-600 mb-3">Decision Date: {formatDate(request?.decisionDate)}</p>
+                            <p className="text-sm text-gray-600 mb-3">Decision By: {request?.getDecisionBy} - {staffData.firstName}{' '}{staffData.lastName}</p>
+                            <p className='text-sm text-gray-600 mb-3'>Contact: {staffData.email} </p>
                         </div>
                     </>
                 )}
