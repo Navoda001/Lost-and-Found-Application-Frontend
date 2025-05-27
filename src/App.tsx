@@ -12,6 +12,7 @@ import MyItemConsole from './components/item/MyItems/MyItemConsole';
 import MyRequestConsole from './components/Request/MyRequest/MyRequestConsole';
 import StaffProfile from './components/Account/Staff/StaffProfile';
 import AdminProfile from './components/Account/Admin/AdminProfile';
+import CreateAccount from './components/Account/CreateAccount';
 
 
 
@@ -37,6 +38,7 @@ function AppWrapper() {
         <Route path='/myrequests' element={<MyRequestConsole/>}/>
         <Route path='/staffprofile' element={<StaffProfile/>}/>
         <Route path='/adminprofile' element={<AdminProfile/>}/>
+        <Route path='/addaccounts' element={<CreateAccount/>}/>
 
 
       </Routes>

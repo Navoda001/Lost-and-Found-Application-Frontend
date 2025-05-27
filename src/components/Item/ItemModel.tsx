@@ -34,7 +34,7 @@ interface AllRequest {
 const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshData }) => {
   const [imgSrc, setImgSrc] = useState<string | null>(null);
   const [itemData, setItemData] = useState<AllItem | null>(null);
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const decode = getUser();
@@ -65,7 +65,7 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
     return date.toISOString().split("T")[0].replace(/-/g, "/"); // e.g., 2025/05/06
   };
 
-  
+
   const handleClaim = async () => {
     const confirm = await Swal.fire({
       title: "Are you sure?",
@@ -131,7 +131,7 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
 
       const requestPayload = {
         itemId: itemData?.itemId ?? "",
-        email: decode?.sub || ""
+        requestEmail: decode?.sub || "",
       };
       console.log("Request data:", requestPayload);
       const response = await AddRequest(requestPayload);
@@ -144,15 +144,7 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
           icon: "success"
         });
         onClose();
-      } else if (response.status === 500) {
-        Swal.fire({
-          title: "Error!",
-          confirmButtonColor: "red",
-          text: "Something went wrong while submitting the request.",
-          icon: "error"
-        });
-      }
-      else {
+      } else {
         Swal.fire({
           title: "Error!",
           confirmButtonColor: "red",
@@ -160,18 +152,29 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
           icon: "error"
         });
       }
-    } catch (error) {
-      console.error("Error submitting request:", error);
-      Swal.fire({
-        title: "Error!",
-        confirmButtonColor: "red",
-        text: "Failed to send the request.You have already sent a request for this item.",
-        icon: "error"
-      });
+    } catch (error: any) {
+      if (error.response.status === 409) {
+        console.error("Error submitting request:", error);
+        Swal.fire({
+          title: "Error!",
+          confirmButtonColor: "red",
+          text: "Failed to send the request.You have already sent a request for this item.",
+          icon: "error"
+        });
+      } else {
+        Swal.fire({
+          title: "Error!",
+          confirmButtonColor: "red",
+          text: "Something went wrong while submitting the request.",
+          icon: "error"
+        });
+      }
+
     } finally {
       setIsLoading(false);
     }
   };
+
 
 
   if (!open || !itemId) return null;

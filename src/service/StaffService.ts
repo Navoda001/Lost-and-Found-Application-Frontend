@@ -7,6 +7,20 @@ const fetchToken = () => {
   return "Bearer " + token
 }
 
+const AddStaffMember = async (staff: any) => {
+  try{
+    const response = await axios.post(baseURL, staff,{
+        headers: {
+          Authorization: fetchToken()
+        }
+      });
+  return response;
+  }catch(error){
+    console.error("Failed to add the item",error);
+    throw error
+  }
+};
+
 const GetStaffById = async (staffId: string) => {
   //get the items
   try {
@@ -67,4 +81,4 @@ const UpdateStaffImage = async (staffImage: any) => {
   }
 };
 
-export { GetStaffById, GetStaffByEmail, UpdateStaff, UpdateStaffImage }
+export { GetStaffById, GetStaffByEmail, UpdateStaff, UpdateStaffImage,AddStaffMember }

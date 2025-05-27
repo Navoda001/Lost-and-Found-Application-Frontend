@@ -43,7 +43,7 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
       setImgSrc(result.image); // base64 image
     }
   };
- const decode = getUser();
+  const decode = getUser();
 
   useEffect(() => {
 
@@ -107,7 +107,7 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
   };
 
 
-  const handleClaim = async () => {
+  const handleFound = async () => {
     const confirm = await Swal.fire({
       title: "Are you sure?",
       text: "Do you want to mark this item as FOUND?",
@@ -172,7 +172,7 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
 
       const requestPayload = {
         itemId: itemData?.itemId ?? "",
-        userId: "U003"
+        requestEmail: decode?.sub || "",
       };
       console.log("Request data:", requestPayload);
       const response = await AddRequest(requestPayload);
@@ -185,15 +185,7 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
           icon: "success"
         });
         onClose();
-      } else if (response.status === 500) {
-        Swal.fire({
-          title: "Error!",
-          confirmButtonColor: "red",
-          text: "Something went wrong while submitting the request.",
-          icon: "error"
-        });
-      }
-      else {
+      } else {
         Swal.fire({
           title: "Error!",
           confirmButtonColor: "red",
@@ -201,14 +193,24 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
           icon: "error"
         });
       }
-    } catch (error) {
-      console.error("Error submitting request:", error);
-      Swal.fire({
-        title: "Error!",
-        confirmButtonColor: "red",
-        text: "Failed to send the request.You have already sent a request for this item.",
-        icon: "error"
-      });
+    } catch (error:any) {
+      if (error.response.status === 409) {
+        console.error("Error submitting request:", error);
+        Swal.fire({
+          title: "Error!",
+          confirmButtonColor: "red",
+          text: "Failed to send the request.You have already sent a request for this item.",
+          icon: "error"
+        });
+      } else {
+        Swal.fire({
+          title: "Error!",
+          confirmButtonColor: "red",
+          text: "Something went wrong while submitting the request.",
+          icon: "error"
+        });
+      }
+
     } finally {
       setIsLoading(false);
     }
@@ -285,7 +287,7 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
 
               {itemData?.itemStatus === "LOST" && (
                 <button
-                  onClick={handleClaim}
+                  onClick={handleFound}
                   disabled={isLoading}
                   className={`w-full py-2 rounded-md text-sm font-semibold transition 
         ${isLoading

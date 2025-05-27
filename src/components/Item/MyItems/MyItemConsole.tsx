@@ -118,7 +118,7 @@ const MyItemConsole = () => {
         <div className="p-6 z-0">
 
             <h1 className="text-[60px] font-bold font-serif uppercase text-center text-[#2c3e50] ">
-                Items
+               My Items
             </h1>
 
 
