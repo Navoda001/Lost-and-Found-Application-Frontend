@@ -9,6 +9,7 @@ import Home from './components/Home';
 import Profile from './components/Account/UserProfile';
 import { AuthProvider } from './components/auth/AuthProvider';
 import MyItemConsole from './components/item/MyItems/MyItemConsole';
+import MyRequestConsole from './components/Request/MyRequest/MyRequestConsole';
 
 
 
@@ -31,6 +32,7 @@ function AppWrapper() {
         <Route path="/requests" element={<RequestConsole />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/myitems" element={<MyItemConsole/>} />
+        <Route path='/myrequests' element={<MyRequestConsole/>}/>
 
       </Routes>
     </>

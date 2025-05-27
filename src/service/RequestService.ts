@@ -15,7 +15,7 @@ const AddRequest = async (request: any) => {
         headers: {
           Authorization: fetchToken()
         }
-      });  // Don't manually set Content-Type header
+      });  
   return response;
   }catch(error){
     console.error("Failed to add the item",error);
@@ -39,10 +39,26 @@ const GetRequestById = async (requestId:string) => {
       }
 }
 
-const GetAllRequestsByIdItemId = async (itemId:string) => {
+const GetAllRequestsByItemId = async (itemId:string) => {
    //get the items
       try{
         const response = await  axios.get(  `${baseURL}/getRequestsByItemId?itemId=${itemId}`,
+      {
+        headers: {
+          Authorization: fetchToken()
+        }
+      });
+        return response.data
+      }catch(error){
+        console.error("Failed to get the data",error);
+        throw error
+      }
+}
+
+const GetAllRequestsByEmail = async (email:string) => {
+   //get the items
+      try{
+        const response = await  axios.get(  `${baseURL}/getRequestsByEmail?email=${email}`,
       {
         headers: {
           Authorization: fetchToken()
@@ -92,4 +108,4 @@ const UpdateRequest = async(requestId :any,request:any) =>{
   }   
 }
 
-export{AddRequest,GetRequestById,GetAllRequestItems,GetAllRequestsByIdItemId,UpdateRequest}
+export{AddRequest,GetRequestById,GetAllRequestItems,GetAllRequestsByItemId,UpdateRequest,GetAllRequestsByEmail}

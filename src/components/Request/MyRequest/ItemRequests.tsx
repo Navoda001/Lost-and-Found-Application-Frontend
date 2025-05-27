@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { GetAllRequestsByItemId } from "../../service/RequestService";
-import RequestAction from "./RequestAction";
 
 interface ItemRequestProps {
   open: boolean;
@@ -39,9 +37,8 @@ const ItemRequests: React.FC<ItemRequestProps> = ({
 
   const getRequestData = async () => {
     if (!itemId) return;
-    const response = await GetAllRequestsByItemId(itemId);
-    setRequestData(response);
-    console.log("Request data:", response);
+    
+    console.log("Request data:");
   };
 
   useEffect(() => {
@@ -203,12 +200,7 @@ const ItemRequests: React.FC<ItemRequestProps> = ({
             </tbody>
           </table>
 
-          <RequestAction
-            openRequest={modalOpen}
-            request={selectedRow}
-            onClose={handleCloseModal}
-            refreshData={refreshAllData}
-          />
+        
         </div>
       </div>
     </div>
