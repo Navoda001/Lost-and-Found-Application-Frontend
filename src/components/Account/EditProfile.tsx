@@ -2,6 +2,7 @@ import React, { useState, ChangeEvent, useEffect } from 'react';
 import { EyeOff, Eye } from 'lucide-react';
 import Swal from 'sweetalert2'
 import { UpdateUser } from '../../service/UserService';
+import { ChangePassword } from '../../service/AuthService';
 
 interface User {
     firstName: string;
@@ -25,12 +26,15 @@ const EditProfile: React.FC<EditProfileProps> = ({ open, onClose, user, refreshD
         phoneNumber: '',
         email: ''
     });
+    const [currentPassword, setCurrentPassword] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [showPassword1, setShowPassword1] = useState<boolean>(false);
     const [showPassword2, setShowPassword2] = useState<boolean>(false);
+     const [showPassword3, setShowPassword3] = useState<boolean>(false);
     const [password2, setPassword2] = useState<string>('');
     const [error, setError] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
+    const [loading2, setLoading2] = useState<boolean>(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -61,9 +65,9 @@ const EditProfile: React.FC<EditProfileProps> = ({ open, onClose, user, refreshD
             cancelButtonColor: "#888",
             confirmButtonText: "Yes, Update it!",
         });
-
+        if (!confirm.isConfirmed) return;
         try {
-            if (!confirm.isConfirmed) return;
+
             const response = await UpdateUser(userData);
 
             if (response.status === 204) {
@@ -100,8 +104,75 @@ const EditProfile: React.FC<EditProfileProps> = ({ open, onClose, user, refreshD
     };
 
 
-    const handleChangePassword = async () => {
-        
+    const handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (password !== password2) {
+            setError("Passwords do not match");
+            return;
+        }
+        setLoading2(true);
+        setError("");
+
+        const confirm = await Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to Update your Password?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#000",
+            cancelButtonColor: "#888",
+            confirmButtonText: "Yes, Update it!",
+        });
+        if (!confirm.isConfirmed) return;
+
+        try {
+            const response = await ChangePassword({
+                email: userData.email,
+                currentPassword: currentPassword,
+                newPassword: password
+            });
+
+            if (response.status === 201) {
+                Swal.fire({
+                    title: 'Success',
+                    text: 'Password updated successfully',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: "#000",
+                });
+                await refreshData();
+                onClose();
+                setPassword2("");
+                setCurrentPassword("");
+                setPassword("");
+
+                setLoading2(false);
+            } else {
+                Swal.fire({
+                    title: 'Update Failed',
+                    text: `Server responded with status ${response.status}`,
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: "red",
+                });
+            }
+        } catch (error: any) {
+            console.error("Error updating password:", error);
+            if (error?.response?.status === 503) {
+                setError("Current password is incorrect");
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: error?.response?.data?.message || 'An unexpected error occurred',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: "red",
+                });
+            }
+
+
+        } finally {
+            setLoading2(false);
+        }
     }
 
     if (!open) return null;
@@ -153,15 +224,15 @@ const EditProfile: React.FC<EditProfileProps> = ({ open, onClose, user, refreshD
 
                 </form>
 
-                <form onSubmit={handleSubmit} className="mt-5 space-y-4 text-black">
+                <form onSubmit={handleChangePassword} className="mt-5 space-y-4 text-black">
 
                     <div className="relative">
                         <input
                             type={showPassword1 ? 'text' : 'password'}
-                            name='password'
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                            name='currentPassword'
+                            placeholder="Current Password"
+                            value={currentPassword}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setCurrentPassword(e.target.value)}
                             className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-md focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-200"
                             required
                         />
@@ -181,10 +252,10 @@ const EditProfile: React.FC<EditProfileProps> = ({ open, onClose, user, refreshD
                     <div className="relative">
                         <input
                             type={showPassword2 ? 'text' : 'password'}
-                            name='password2'
-                            placeholder="Confirm Password"
-                            value={password2}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword2(e.target.value)}
+                            name='password'
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                             className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-md focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-200"
                             required
                         />
@@ -201,6 +272,29 @@ const EditProfile: React.FC<EditProfileProps> = ({ open, onClose, user, refreshD
                         </button>
                     </div>
 
+                    <div className="relative">
+                        <input
+                            type={showPassword3 ? 'text' : 'password'}
+                            name='password2'
+                            placeholder="Confirm Password"
+                            value={password2}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword2(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-md focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-200"
+                            required
+                        />
+                        <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                            onClick={() => setShowPassword3(!showPassword3)}
+                        >
+                            {showPassword3 ? (
+                                <EyeOff className="h-5 w-5 text-gray-400" />
+                            ) : (
+                                <Eye className="h-5 w-5 text-gray-400" />
+                            )}
+                        </button>
+                    </div>
+
                     {error && (
                         <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-center">
                             {error}
@@ -209,11 +303,10 @@ const EditProfile: React.FC<EditProfileProps> = ({ open, onClose, user, refreshD
 
                     <button
                         type="submit"
-                        onClick={handleChangePassword}
                         className="w-full px-4 py-3 text-sm font-bold rounded-md transition-colors duration-200 bg-black text-white hover:bg-black/70"
 
                     >
-                        {loading ? "Changing..." : "Change Password"}
+                        {loading2 ? "Changing..." : "Change Password"}
                     </button>
 
                 </form>
