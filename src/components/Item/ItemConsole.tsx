@@ -3,6 +3,7 @@ import { GetAllItems } from "../../service/ItemService";
 import ItemCard from "./ItemCard";
 import ItemModel from "./ItemModel";
 import AddItemModal from "./AddItemModel";
+import { useNavigate } from "react-router";
 
 const ItemConsole = () => {
     interface AllItem {
@@ -29,16 +30,25 @@ const ItemConsole = () => {
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
     const [filterStatus, setFilterStatus] = useState<'ALL' | 'LOST' | 'FOUND' | 'CLAIMED'>('ALL');
     const [searchTerm, setSearchTerm] = useState('');
-
+    const navigate = useNavigate();
 
     const containerRef = useRef<HTMLDivElement>(null);
     const cardRef = useRef<HTMLDivElement>(null);
     const rowsPerPage = 3;
 
     const loadData = async () => {
-        const items = await GetAllItems();
-        setItemData(items);
-        console.log("Items loaded:", items);
+        try {
+            const items = await GetAllItems();
+            setItemData(items);
+            console.log("Items loaded:", items);
+        } catch (error: any) {
+            if (error?.response?.status === 401) {
+                navigate("/");
+            } else {
+                console.error("Failed to load items:", error);
+            }
+        }
+
     };
 
     useEffect(() => {

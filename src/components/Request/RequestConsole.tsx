@@ -3,6 +3,7 @@ import { GetAllItems } from "../../service/ItemService";
 import { GetAllRequestItems } from "../../service/RequestService";
 import ItemCard from "./ItemCard";
 import ItemRequests from "./ItemRequests";
+import { useNavigate } from "react-router";
 
 const RequestConsole = () => {
     interface AllItem {
@@ -28,16 +29,25 @@ const RequestConsole = () => {
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
     const [filterStatus, setFilterStatus] = useState<'FOUND' | 'CLAIMED'>('FOUND');
     const [searchTerm, setSearchTerm] = useState('');
-
+    const navigate = useNavigate();
 
     const containerRef = useRef<HTMLDivElement>(null);
     const cardRef = useRef<HTMLDivElement>(null);
     const rowsPerPage = 3;
 
     const loadData = async () => {
-        const items = await GetAllRequestItems();
-        setItemData(items);
-        console.log("Items loaded:", items);
+
+        try {
+            const items = await GetAllRequestItems();
+            setItemData(items);
+            console.log("Items loaded:", items);
+        } catch (error: any) {
+            if (error?.response?.status === 401) {
+                navigate("/unauth");
+            } else {
+                console.error("Failed to load items:", error);
+            }
+        }
 
 
     };
