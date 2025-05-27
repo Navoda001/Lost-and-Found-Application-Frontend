@@ -38,6 +38,22 @@ const GetItemById = async (itemId:string) => {
       }
 }
 
+const GetItemsByEmail = async (email:string) => {
+   //get the items
+      try{
+        const response = await  axios.get(  `${baseURL}/getItemsByEmail?email=${email}`,
+      {
+        headers: {
+          Authorization: fetchToken()
+        }
+      });
+        return response.data
+      }catch(error){
+        console.error("Failed to get the data",error);
+        throw error
+      }
+}
+
 const GetAllItems = async () => {
    //get the items
       try{
@@ -73,13 +89,15 @@ const DeleteItem = async(itemId :any) =>{
   }
 }
 
-const FoundItem = async(itemId :any,status:any) =>{
+const FoundItem = async(itemId :any,status:any,email:any) =>{
   interface AllItem {
   itemStatus: string;
+  email: string;
 }
 
   const st: AllItem = {
-    itemStatus: status
+    itemStatus: status,
+    email:email
   }
   try{
     const response  =  await axios.patch(
@@ -100,4 +118,4 @@ const FoundItem = async(itemId :any,status:any) =>{
   }   
 }
 
-export{GetAllItems,AddItem,GetItemById,DeleteItem,FoundItem}
+export{GetAllItems,GetItemsByEmail,AddItem,GetItemById,DeleteItem,FoundItem}

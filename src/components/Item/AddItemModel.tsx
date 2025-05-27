@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { AddItem } from "../../service/ItemService";
 import { Listbox } from "@headlessui/react";
+import {getUser} from "../auth/AuthProvider";
 import Swal from 'sweetalert2'
 
 interface AddItemModalProps {
@@ -14,6 +15,7 @@ interface AllItem {
   location: string;
   itemStatus: string;
   foundDate: string;
+  email:string;
   image: string;
 }
 
@@ -25,11 +27,12 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, onClose }) => {
     itemStatus: "LOST",
     foundDate: "",
     image: "",
+    email:"",
   });
   const statusOptions = ["LOST", "FOUND"];
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-
+  const decode = getUser();
   if (!open) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -62,6 +65,8 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, onClose }) => {
 
   const handleSubmit = async () => {
     try {
+      formData.email = decode?.sub || ""; // Set email from decoded token
+      console.log("Form Data:", formData);
       const response = await AddItem(formData); // Send as multipart/form-data
       if (response.status === 200 || response.status === 201) {
         Swal.fire({
@@ -97,6 +102,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, onClose }) => {
       itemStatus: "LOST",
       foundDate: "",
       image: "",
+      email:""
     });
     setPreviewImage(null);
     setImageFile(null);

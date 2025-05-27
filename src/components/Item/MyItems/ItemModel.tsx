@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Swal from 'sweetalert2'
-import { DeleteItem, FoundItem, GetItemById } from "../../service/ItemService";
-import { AddRequest } from "../../service/RequestService";
-import { getUser } from "../auth/AuthProvider";
+import { DeleteItem, FoundItem, GetItemById } from "../../../service/ItemService";
+import { AddRequest } from "../../../service/RequestService";
+import { getUser } from "../../auth/AuthProvider";
 
 interface ItemModelProps {
   open: boolean;
@@ -26,18 +26,12 @@ interface AllItem {
   claimedDate?: string;
 }
 
-interface AllRequest {
-  itemId: string | null;
-  email: string;
-}
-
 const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshData }) => {
   const [imgSrc, setImgSrc] = useState<string | null>(null);
   const [itemData, setItemData] = useState<AllItem | null>(null);
-  
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const decode = getUser();
+
   const fetchData = async () => {
     if (!itemId) return;
 
@@ -49,6 +43,7 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
       setImgSrc(result.image); // base64 image
     }
   };
+ const decode = getUser();
 
   useEffect(() => {
 
@@ -65,7 +60,53 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
     return date.toISOString().split("T")[0].replace(/-/g, "/"); // e.g., 2025/05/06
   };
 
-  
+  const handleDelete = async () => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#888",
+      confirmButtonText: "Yes, delete it!"
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      setIsDeleting(true);
+      const response = await DeleteItem(itemData?.itemId);
+      if (response.status === 204) {
+        Swal.fire({
+          title: "Deleted!",
+          confirmButtonColor: "#000",
+          text: "Item is Deleted!",
+          icon: "success"
+        });
+        await refreshData();
+        onClose();
+      } else {
+        Swal.fire({
+          title: "Error!",
+          confirmButtonColor: "red",
+          text: "Failed to delete item!",
+          icon: "error"
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      Swal.fire({
+        title: "Error!",
+        confirmButtonColor: "red",
+        text: "Failed to delete item!",
+        icon: "error"
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+
   const handleClaim = async () => {
     const confirm = await Swal.fire({
       title: "Are you sure?",
@@ -131,7 +172,7 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
 
       const requestPayload = {
         itemId: itemData?.itemId ?? "",
-        email: decode?.sub || ""
+        userId: "U003"
       };
       console.log("Request data:", requestPayload);
       const response = await AddRequest(requestPayload);
@@ -263,6 +304,16 @@ const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshDat
                 Close
               </button>
             </div>
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className={`mt-4 w-full py-2 rounded-md text-sm font-semibold transition ${isDeleting
+                ? "bg-red-300 cursor-not-allowed text-red-800"
+                : "bg-red-200 text-red-800 hover:bg-red-300"
+                }`}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </button>
 
           </div>
         </div>
