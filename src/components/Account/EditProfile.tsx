@@ -1,29 +1,29 @@
-import React, { useState, ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import { EyeOff, Eye } from 'lucide-react';
 import Swal from 'sweetalert2'
+import { UpdateUser } from '../../service/UserService';
 
 interface User {
     firstName: string;
     lastName: string;
-    email: string;
     phoneNumber: string;
+    email: string;
 }
 
 interface EditProfileProps {
     open: boolean;
     onClose: () => void;
     refreshData: () => Promise<void>;
-    userId: string | null;
+    user: User | null;
 }
 
-const EditProfile: React.FC<EditProfileProps> = ({ open, onClose, userId, refreshData }) => {
+const EditProfile: React.FC<EditProfileProps> = ({ open, onClose, user, refreshData }) => {
 
-    const [user, setUser] = useState<User>({
+    const [userData, setUserData] = useState<User>({
         firstName: '',
         lastName: '',
-        email: '',
         phoneNumber: '',
+        email: ''
     });
     const [password, setPassword] = useState<string>('');
     const [showPassword1, setShowPassword1] = useState<boolean>(false);
@@ -34,20 +34,74 @@ const EditProfile: React.FC<EditProfileProps> = ({ open, onClose, userId, refres
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setUser((prev) => ({
+        setUserData((prev) => ({
             ...prev,
             [name]: value,
         }));
     };
 
+    useEffect(() => {
+        if (user) {
+            setUserData(user);
+        }
+    }, [user, open])
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault(); // Always call this first
+        console.log("User data submitted:", userData);
+        setLoading(true);
+        setError("");
 
+        const confirm = await Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to Update your profile?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#000",
+            cancelButtonColor: "#888",
+            confirmButtonText: "Yes, Update it!",
+        });
 
+        try {
+            if (!confirm.isConfirmed) return;
+            const response = await UpdateUser(userData);
+
+            if (response.status === 204) {
+                Swal.fire({
+                    title: 'Success',
+                    text: 'Profile updated successfully',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: "#000",
+                });
+                await refreshData();
+                onClose();
+                setLoading(false);
+            } else {
+                Swal.fire({
+                    title: 'Update Failed',
+                    text: `Server responded with status ${response.status}`,
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: "red",
+                });
+            }
+        } catch (error: any) {
+            console.error("Error updating user:", error);
+
+            Swal.fire({
+                title: 'Error',
+                text: error?.response?.data?.message || 'An unexpected error occurred',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: "red",
+            });
+        }
     };
 
-    const handleChangePassword = async () => {
 
+    const handleChangePassword = async () => {
+        
     }
 
     if (!open) return null;
@@ -67,7 +121,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ open, onClose, userId, refres
                             type="text"
                             name='firstName'
                             placeholder="First Name"
-                            value={user.firstName}
+                            value={userData.firstName}
                             onChange={(handleChange)}
                             className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-md focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-200"
                         />
@@ -75,33 +129,22 @@ const EditProfile: React.FC<EditProfileProps> = ({ open, onClose, userId, refres
                             type="text"
                             name='lastName'
                             placeholder="Last Name"
-                            value={user.lastName}
+                            value={userData.lastName}
                             onChange={(handleChange)}
                             className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-md focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-200"
                         />
                     </div>
-
-                    <input
-                        type="email"
-                        name='email'
-                        placeholder="Email"
-                        value={user.email}
-                        onChange={(handleChange)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-md focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-200"
-                    />
-
                     <input
                         type="tel"
                         name='phoneNumber'
                         placeholder="Phone Number"
-                        value={user.phoneNumber}
+                        value={userData.phoneNumber}
                         onChange={(handleChange)}
                         className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-md focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-200"
                     />
 
                     <button
                         type="submit"
-                        onClick={handleSubmit}
                         className="w-full px-4 py-3 text-sm font-bold rounded-md transition-colors duration-200 bg-black text-white hover:bg-black/70"
 
                     >
