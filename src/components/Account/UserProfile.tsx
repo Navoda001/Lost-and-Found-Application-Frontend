@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import EditProfile from './EditProfile';
 import ImageUpload from './ImageUpload';
 import { GetUserByEmail } from '../../service/UserService';
-import { jwtDecode } from 'jwt-decode'
+import { getUser } from "../Auth/AuthProvider"
 import { useAuth } from "../Auth/AuthProvider";
 import { useNavigate } from 'react-router';
 
@@ -16,12 +16,7 @@ interface User {
     image: string;
 }
 
-interface JwtDecode {
-    sub: string;
-    roles: string;
-    iat: number;
-    exp: number;
-}
+
 
 const UserProfile: React.FC = () => {
 
@@ -37,20 +32,18 @@ const UserProfile: React.FC = () => {
     });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
+    const decode = getUser();
     const { isAuthenticated } = useAuth();
     const handleCloseModal = () => {
         setEditProfileModal(false);
     };
 
     const loadData = async () => {
-        const token = localStorage.getItem('trackMyItemToken');
-        if (!token) {
-            console.error("Token not found");
+        if (!decode?.sub) {
+            console.error("Decoded token or sub is missing");
             return;
         }
-        const decode = jwtDecode<JwtDecode>(token);
         const response = await GetUserByEmail(decode.sub)
-
         setUser(response);
     }
 

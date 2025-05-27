@@ -28,7 +28,7 @@ function AppWrapper() {
         <Route path='/login' element={<Login />} />
         <Route path="/items" element={<ItemConsole />} />
         <Route path="/requests" element={<RequestConsole />} />
-        <Route path="/account" element={<Profile />} />
+        <Route path="/profile" element={<Profile />} />
 
       </Routes>
     </>

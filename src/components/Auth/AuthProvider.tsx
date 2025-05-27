@@ -1,6 +1,12 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import { Token } from "typescript";
+import { jwtDecode } from 'jwt-decode'
 
+interface JwtDecode {
+    sub: string;
+    roles: string;
+    iat: number;
+    exp: number;
+}
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -44,4 +50,14 @@ export const useAuth = () => {
         throw new Error("useAuth should be used within an AuthProvider")
     }
     return context;
+}
+
+export const getUser = () => {
+    const token = localStorage.getItem('trackMyItemToken');
+        if (!token) {
+            console.error("Token not found");
+            return;
+        }
+        const decode = jwtDecode<JwtDecode>(token);
+        return decode
 }

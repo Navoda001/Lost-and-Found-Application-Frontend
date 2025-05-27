@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "./Auth/AuthProvider";
+import { useAuth, getUser } from "./Auth/AuthProvider";
 
 
 
@@ -9,23 +9,33 @@ const NavBar: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const decode = getUser();
   const handleOnClick = () => {
     logout();
     navigate("/")
   }
 
   const [openNav, setOpenNav] = React.useState(false);
-  const navItems = ["Items", "Requests", "Account"];
+
+  let navItems: string[] = [];
+
+  if (decode?.roles === "ROLE_ADMIN") {
+    navItems = ["Add Accounts", "Profile"];
+  } else if (decode?.roles === "ROLE_USER") {
+    navItems = ["Items", "My Items", "My Requests", "Profile"];
+  } else {
+    navItems = ["Items", "Requests", "Profile"];
+  }
 
   const navList = (
     <ul className="flex flex-col gap-3 mt-4 mb-4 lg:mt-0 lg:mb-0 lg:flex-row lg:items-center lg:gap-8">
       {navItems.map((item) => (
         <li key={item}>
           <NavLink
-            to={`/${item.toLowerCase()}`}
+            to={`/${item.toLowerCase().replace(/\s+/g, '')}`}
             className={({ isActive }) =>
               `group relative px-2 py-1 text-base font-medium transition-colors duration-300
-             ${isActive ? "text-black font-semibold" : "text-gray-700 hover:text-black"}`
+           ${isActive ? "text-black font-semibold" : "text-gray-700 hover:text-black"}`
             }
           >
             {({ isActive }) => (
@@ -33,8 +43,8 @@ const NavBar: React.FC = () => {
                 {item}
                 <span
                   className={`absolute bottom-0 left-0 w-full h-0.5 bg-black transform transition-transform duration-300 origin-left
-                  ${isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"}
-                `}
+                ${isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"}
+              `}
                 ></span>
               </>
             )}
@@ -43,6 +53,7 @@ const NavBar: React.FC = () => {
       ))}
     </ul>
   );
+
 
 
   return (
@@ -72,12 +83,12 @@ const NavBar: React.FC = () => {
                 </>
               ) : (
                 <>
-                <NavLink
-                  to="/login"
-                  className="inline-block px-4 py-2 text-sm font-medium text-black hover:text-white hover:bg-black border border-black rounded transition duration-300"
-                >
-                  Log In
-                </NavLink>
+                  <NavLink
+                    to="/login"
+                    className="inline-block px-4 py-2 text-sm font-medium text-black hover:text-white hover:bg-black border border-black rounded transition duration-300"
+                  >
+                    Log In
+                  </NavLink>
                   <NavLink
                     to="/signup"
                     className="inline-block px-4 py-2 text-sm font-medium text-white bg-black hover:bg-gray-900 rounded transition duration-300 shadow"
