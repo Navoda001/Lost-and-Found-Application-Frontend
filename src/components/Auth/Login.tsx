@@ -39,12 +39,6 @@ const Login: React.FC = () => {
                 setError("");
                 console.log("Token received:", token);
                 login(token);
-                Swal.fire({
-                    title: "Success!",
-                    confirmButtonColor: "#000",
-                    text: "Logged in successfully.",
-                    icon: "success"
-                });
                 navigate("/");
             } else {
                 throw new Error("Invalid credentials");

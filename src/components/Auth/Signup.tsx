@@ -58,12 +58,6 @@ const SignUp: React.FC = () => {
             if (token !== null || token !== undefined) {
                 console.log("Token received:", token);
                 login(token);
-                Swal.fire({
-                    title: "Success!",
-                    confirmButtonColor: "#000",
-                    text: "Account created successfully.",
-                    icon: "success"
-                });
                 setUser({ firstName: "", lastName: "", phoneNumber: "", email: "", password: "", role: "USER" });
                 setPassword2("");
                 navigate("/");
