@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import EditProfile from './EditProfile';
 import ImageUpload from './ImageUpload';
+import { GetUserByEmail } from '../../service/UserService';
+import { jwtDecode } from 'jwt-decode'
 
 interface User {
     userId: string;
@@ -8,8 +10,15 @@ interface User {
     lastName: string;
     email: string;
     phoneNumber: string;
-    password: string;
     role: string;
+    image:string;
+}
+
+interface JwtDecode {
+  sub: string;
+  roles: string;
+  iat: number;
+  exp: number;
 }
 
 const UserProfile: React.FC = () => {
@@ -21,20 +30,33 @@ const UserProfile: React.FC = () => {
         lastName: '',
         email: '',
         phoneNumber: '',
-        password: '',
-        role: ''
+        role: '',
+        image:'',
     });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [profileImage, setProfileImage] = useState('');
-    
+
     const handleCloseModal = () => {
         setEditProfileModal(false);
     };
 
     const loadData = async () => {
-
+        const token = localStorage.getItem('trackMyItemToken');
+        if (!token) {
+            console.error("Token not found");
+            return; 
+        }
+        const decode = jwtDecode<JwtDecode>(token);
+        const response = await GetUserByEmail(decode.sub)
+        
+        setUser(response);
+        console.log("User data loaded:", user.image);
+        setProfileImage(response.image);
     }
 
+    useEffect(()=>{
+        loadData();
+    },[])
     return (
         <div className="max-w-4xl mx-auto p-6 space-y-6">
             {/* Header Section */}
@@ -43,7 +65,7 @@ const UserProfile: React.FC = () => {
                 <div className="flex flex-col items-center">
                     <div className="relative w-36 h-36">
                         <img
-                            src={profileImage ? profileImage : 'profile.jpg' }
+                            src={user.image ? user.image : 'profile.jpg'}
                             alt="Profile"
                             className="rounded-full border-4 border-white w-36 h-36 object-cover shadow-lg"
                         />
@@ -73,6 +95,8 @@ const UserProfile: React.FC = () => {
 
                         <ImageUpload
                             isOpen={isModalOpen}
+                            email={user.email}
+                            refreshData={loadData}
                             onClose={() => setIsModalOpen(false)}
                         />
                     </div>
@@ -85,15 +109,15 @@ const UserProfile: React.FC = () => {
 
                 {/* Name Section */}
                 <div className="text-center">
-                    <h2 className="text-3xl font-bold">Andy Horwitz</h2>
-                    <p className="text-gray-300 text-lg">example@gmail.com</p>
-                    <p className="text-gray-300 text-lg">0762085246</p>
+                    <h2 className="text-3xl font-bold">{user.firstName}{' '}{user.lastName}</h2>
+                    <p className="text-gray-300 text-lg">{user.email}</p>
+                    <p className="text-gray-300 text-lg">{user.phoneNumber}</p>
                 </div>
 
                 <EditProfile
                     open={editProfileModal}
                     onClose={handleCloseModal}
-                    userId={user.userId}
+                    user={user}
                     refreshData={loadData}
                 />
             </div>
