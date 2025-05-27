@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { GetAllRequestsByEmail } from "../../../service/RequestService";
 import { getUser } from "../../auth/AuthProvider";
-import { GetItemById } from "../../../service/ItemService";
+import { GetStaffById } from "../../../service/StaffService";
 
 const MyRequestConsole = () => {
     interface Request {
@@ -19,9 +19,22 @@ const MyRequestConsole = () => {
         image: string;
     }
 
+    interface User {
+        firstName: string;
+        lastName: string;
+        email: string;
+        phoneNumber: string;
+    }
+
     const TABLE_HEAD = ["Request Id", "Item Id", "Item Name", "Status", "Request Date", ""];
 
     const [requestData, setRequestData] = useState<Request[]>([]);
+    const [staffData, setStaffData] = useState<User>({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+    })
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
     const [filterStatus, setFilterStatus] = useState<"ALL" | "PENDING" | "APPROVED" | "REJECTED">("ALL");
@@ -30,9 +43,19 @@ const MyRequestConsole = () => {
     const decode = getUser();
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const formatDate = (dateArr: [number, number, number]) => {
-        const [year, month, day] = dateArr;
-        return `${day.toString().padStart(2, "0")}/${month.toString().padStart(2, "0")}/${year}`;
+      const formatDate = (rawDate: string | [number, number, number] | null | undefined): string => {
+        if (!rawDate) return "N/A";
+
+        // Handle LocalDate serialized as [YYYY, MM, DD]
+        if (Array.isArray(rawDate)) {
+            const [year, month, day] = rawDate;
+            return `${year}/${String(month).padStart(2, "0")}/${String(day).padStart(2, "0")}`;
+        }
+
+        const date = new Date(rawDate);
+        if (isNaN(date.getTime())) return rawDate.toString();
+
+        return date.toISOString().split("T")[0].replace(/-/g, "/");
     };
 
     const loadData = async () => {
@@ -49,9 +72,26 @@ const MyRequestConsole = () => {
         }
     };
 
+    const fetchStaffById = async () => {
+        if (!selectedRequest?.getDecisionBy) return;
+        try {
+            const response = await GetStaffById(selectedRequest.getDecisionBy);
+            setStaffData(response);
+        } catch (error) {
+            console.error("Failed to fetch staff data:", error);
+        }
+    };
+
     useEffect(() => {
         loadData();
-    }, []);
+    },[]);
+
+    useEffect(() => {
+        if (selectedRequest?.getDecisionBy) {
+            fetchStaffById();
+        }
+    }, [selectedRequest]);
+
 
     const filteredRows = requestData.filter(req => {
         const matchesStatus =
@@ -63,13 +103,11 @@ const MyRequestConsole = () => {
     });
 
     const handleAction = (row: Request) => {
-        if (row.requestStatus.toLowerCase() === "pending") {
             setSelectedRequest(row);
             setModalOpen(true);
-        } else {
-            alert(`Viewing request ${row.requestId}`);
-        }
     };
+
+    
 
     return (
         <div className="p-6 z-0" ref={containerRef}>
@@ -153,9 +191,7 @@ const MyRequestConsole = () => {
                                         onClick={() => handleAction(row)}
                                         className="px-4 py-2 text-sm font-medium rounded-md border transition bg-black text-white hover:bg-white hover:text-black"
                                     >
-                                        {row.requestStatus.toLowerCase() === "pending"
-                                            ? "Action"
-                                            : "View"}
+                                       View 
                                     </button>
                                 </td>
                             </tr>
@@ -193,7 +229,7 @@ const MyRequestConsole = () => {
                                     "https://png.pngtree.com/png-vector/20210827/ourmid/pngtree-new-item-poster-png-image_3834274.jpg"
                                 }
                                 alt={selectedRequest.itemName}
-                                className="w-full h-full object-cover rounded-lg"
+                                className="w-full h-96 object-fill rounded-lg"
                             />
                         </div>
 
@@ -209,16 +245,13 @@ const MyRequestConsole = () => {
                                 <strong>Item Name:</strong> {selectedRequest.itemName}
                             </p>
                             <p>
-                                <strong>User Name:</strong> {selectedRequest.userName}
-                            </p>
-                            <p>
                                 <strong>Status:</strong>{" "}
                                 <span
                                     className={`px-2 py-1 text-sm font-semibold rounded-full ${selectedRequest.requestStatus === "APPROVED"
-                                            ? "bg-green-200 text-green-800"
-                                            : selectedRequest.requestStatus === "REJECTED"
-                                                ? "bg-red-200 text-red-800"
-                                                : "bg-yellow-200 text-yellow-800"
+                                        ? "bg-green-200 text-green-800"
+                                        : selectedRequest.requestStatus === "REJECTED"
+                                            ? "bg-red-200 text-red-800"
+                                            : "bg-yellow-200 text-yellow-800"
                                         }`}
                                 >
                                     {selectedRequest.requestStatus}
@@ -231,10 +264,27 @@ const MyRequestConsole = () => {
                                 <strong>Message:</strong> {selectedRequest.message || "N/A"}
                             </p>
                             <p>
-                                <strong>Decision By:</strong> {selectedRequest.getDecisionBy || "N/A"}
+                                <strong>Decision By:</strong>{" "}
+                                {selectedRequest.getDecisionBy ? (
+                                    <>
+                                        {selectedRequest.getDecisionBy} - {staffData?.firstName} {staffData?.lastName}
+                                    </>
+                                ) : (
+                                    "N/A"
+                                )}
                             </p>
                             <p>
-                                <strong>Decision Date:</strong> {selectedRequest.decisionDate || "N/A"}
+                                <strong>Contact Staff:</strong>{" "}
+                                {selectedRequest.getDecisionBy ? (
+                                    <>
+                                        {staffData.email}
+                                    </>
+                                ) : (
+                                    "N/A"
+                                )}
+                            </p>
+                            <p>
+                                <strong>Decision Date:</strong> {formatDate(selectedRequest.decisionDate) || "N/A"}
                             </p>
                         </div>
                     </div>

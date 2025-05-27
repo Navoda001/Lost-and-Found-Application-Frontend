@@ -4,6 +4,7 @@ import ItemCard from "./ItemCard";
 import ItemModel from "./ItemModel";
 import AddItemModal from "./AddItemModel";
 import { useNavigate } from "react-router";
+import { getUser } from "../auth/AuthProvider";
 
 const ItemConsole = () => {
     interface AllItem {
@@ -31,7 +32,7 @@ const ItemConsole = () => {
     const [filterStatus, setFilterStatus] = useState<'ALL' | 'LOST' | 'FOUND' | 'CLAIMED'>('ALL');
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
-
+    const decode = getUser();
     const containerRef = useRef<HTMLDivElement>(null);
     const cardRef = useRef<HTMLDivElement>(null);
     const rowsPerPage = 3;
@@ -119,22 +120,26 @@ const ItemConsole = () => {
 
             {/* Card Container */}
             {/*add new Item */}
+            {decode?.roles !== "ROLE_STAFF" && (
+                <div className="flex justify-end mb-4 mr-5">
 
-            <div className="flex justify-end mb-4 mr-5">
 
-                <AddItemModal
-                    open={addModalOpen}
-                    onClose={() => {
-                        setAddModalOpen(false);
-                        loadData(); // Refresh data after item is added
-                    }}
-                />
+                    <AddItemModal
+                        open={addModalOpen}
+                        onClose={() => {
+                            setAddModalOpen(false);
+                            loadData(); // Refresh data after item is added
+                        }}
+                    />
 
-                <button onClick={() => setAddModalOpen(true)} className="px-4 py-2 bg-black text-white text-sm font-bold rounded-md hover:bg-black/70 transition-colors duration-200"
-                >
-                    + Add Item
-                </button>
-            </div>
+
+
+                    <button onClick={() => setAddModalOpen(true)} className="px-4 py-2 bg-black text-white text-sm font-bold rounded-md hover:bg-black/70 transition-colors duration-200"
+                    >
+                        + Add Item
+                    </button>
+                </div>
+            )}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
 
                 {/* Filter Buttons */}
