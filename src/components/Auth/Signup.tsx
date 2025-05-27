@@ -2,7 +2,6 @@ import React, { useState, ChangeEvent } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { EyeOff, Eye, ChevronLeft } from 'lucide-react';
 import { useAuth } from './AuthProvider';
-import Swal from 'sweetalert2'
 import { SignUpTask } from '../../service/AuthService';
 
 interface User {

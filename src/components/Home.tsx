@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router";
-import { useAuth } from "./Auth/AuthProvider";
+import { useAuth } from "./auth/AuthProvider";
 
 const Home: React.FC = () => {
     const { isAuthenticated } = useAuth();

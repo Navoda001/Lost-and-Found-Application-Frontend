@@ -1,13 +1,14 @@
 import './App.css';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import NavBar from './components/NavBar';
-import ItemConsole from './components/Item/ItemConsole';
+import ItemConsole from './components/item/ItemConsole';
 import RequestConsole from './components/Request/RequestConsole';
-import SignUp from './components/Auth/Signup';
-import Login from './components/Auth/Login';
+import SignUp from './components/auth/Signup';
+import Login from './components/auth/Login';
 import Home from './components/Home';
 import Profile from './components/Account/UserProfile';
-import { AuthProvider } from './components/Auth/AuthProvider';
+import { AuthProvider } from './components/auth/AuthProvider';
+import MyItemConsole from './components/item/MyItems/MyItemConsole';
 
 
 
@@ -29,6 +30,7 @@ function AppWrapper() {
         <Route path="/items" element={<ItemConsole />} />
         <Route path="/requests" element={<RequestConsole />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/myitems" element={<MyItemConsole/>} />
 
       </Routes>
     </>
