@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent } from "react";
 
 import Swal from 'sweetalert2'
-import { UpdateUserImage } from "../../service/UserService";
+import { UpdateUserImage } from "../../../service/UserService";
 
 interface ImageUploadModalProps {
   isOpen: boolean;

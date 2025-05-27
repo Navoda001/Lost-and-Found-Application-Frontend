@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import EditProfile from './EditProfile';
-import ImageUpload from './ImageUpload';
-import { GetUserByEmail } from '../../service/UserService';
-import { getUser } from "../auth/AuthProvider"
-import { useAuth } from "../auth/AuthProvider";
+import { getUser } from "../../auth/AuthProvider"
+import { useAuth } from "../../auth/AuthProvider";
 import { useNavigate } from 'react-router';
+import { GetAdminByEmail } from '../../../service/AdminService';
 
 interface User {
     userId: string;
@@ -18,7 +17,7 @@ interface User {
 
 
 
-const UserProfile: React.FC = () => {
+const AdminProfile: React.FC = () => {
 
     const [editProfileModal, setEditProfileModal] = useState(false);
     const [user, setUser] = useState<User>({
@@ -43,7 +42,7 @@ const UserProfile: React.FC = () => {
             console.error("Decoded token or sub is missing");
             return;
         }
-        const response = await GetUserByEmail(decode.sub)
+        const response = await GetAdminByEmail(decode.sub)
         setUser(response);
     }
 
@@ -58,43 +57,6 @@ const UserProfile: React.FC = () => {
                 {isAuthenticated ? (
                     <>
                         <div className="flex flex-col items-center">
-                            <div className="relative w-36 h-36">
-                                <img
-                                    src={user.image ? user.image : 'profile.jpg'}
-                                    alt="Profile"
-                                    className="rounded-full border-4 border-white w-36 h-36 object-cover shadow-lg"
-                                />
-
-                                <button
-                                    onClick={() => setIsModalOpen(true)}
-                                    className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md hover:bg-gray-200 transition"
-                                    aria-label="Upload profile image"
-                                >
-                                    {/* Camera icon svg */}
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-6 w-6 text-black"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                        strokeWidth={2}
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M3 7h2l3-3h8l3 3h2a1 1 0 011 1v11a1 1 0 01-1 1H3a1 1 0 01-1-1V8a1 1 0 011-1z"
-                                        />
-                                        <circle cx="12" cy="13" r="3" />
-                                    </svg>
-                                </button>
-
-                                <ImageUpload
-                                    isOpen={isModalOpen}
-                                    email={user.email}
-                                    refreshData={loadData}
-                                    onClose={() => setIsModalOpen(false)}
-                                />
-                            </div>
                             <button
                                 onClick={() => setEditProfileModal(true)}
                                 className="mt-4 px-5 py-2 bg-white text-black font-semibold rounded-md hover:bg-gray-200 transition">
@@ -136,4 +98,4 @@ const UserProfile: React.FC = () => {
     );
 };
 
-export default UserProfile;
+export default AdminProfile;

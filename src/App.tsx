@@ -6,10 +6,12 @@ import RequestConsole from './components/Request/RequestConsole';
 import SignUp from './components/auth/Signup';
 import Login from './components/auth/Login';
 import Home from './components/Home';
-import Profile from './components/Account/UserProfile';
+import Profile from './components/Account/user/UserProfile';
 import { AuthProvider } from './components/auth/AuthProvider';
 import MyItemConsole from './components/item/MyItems/MyItemConsole';
 import MyRequestConsole from './components/Request/MyRequest/MyRequestConsole';
+import StaffProfile from './components/Account/Staff/StaffProfile';
+import AdminProfile from './components/Account/Admin/AdminProfile';
 
 
 
@@ -33,6 +35,9 @@ function AppWrapper() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/myitems" element={<MyItemConsole/>} />
         <Route path='/myrequests' element={<MyRequestConsole/>}/>
+        <Route path='/staffprofile' element={<StaffProfile/>}/>
+        <Route path='/adminprofile' element={<AdminProfile/>}/>
+
 
       </Routes>
     </>

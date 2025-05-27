@@ -1,13 +1,12 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import { EyeOff, Eye } from 'lucide-react';
 import Swal from 'sweetalert2'
-import { UpdateUser } from '../../service/UserService';
-import { ChangePassword } from '../../service/AuthService';
+import { ChangePassword } from '../../../service/AuthService';
+import { UpdateStaff } from '../../../service/StaffService';
 
 interface User {
     firstName: string;
     lastName: string;
-    phoneNumber: string;
     email: string;
 }
 
@@ -23,7 +22,6 @@ const EditProfile: React.FC<EditProfileProps> = ({ open, onClose, user, refreshD
     const [userData, setUserData] = useState<User>({
         firstName: '',
         lastName: '',
-        phoneNumber: '',
         email: ''
     });
     const [currentPassword, setCurrentPassword] = useState<string>('');
@@ -68,7 +66,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ open, onClose, user, refreshD
         if (!confirm.isConfirmed) return;
         try {
 
-            const response = await UpdateUser(userData);
+            const response = await UpdateStaff(userData);
 
             if (response.status === 204) {
                 Swal.fire({
@@ -205,14 +203,6 @@ const EditProfile: React.FC<EditProfileProps> = ({ open, onClose, user, refreshD
                             className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-md focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-200"
                         />
                     </div>
-                    <input
-                        type="tel"
-                        name='phoneNumber'
-                        placeholder="Phone Number"
-                        value={userData.phoneNumber}
-                        onChange={(handleChange)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-md focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-200"
-                    />
 
                     <button
                         type="submit"

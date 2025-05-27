@@ -20,11 +20,11 @@ const NavBar: React.FC = () => {
   let navItems: string[] = [];
 
   if (decode?.roles === "ROLE_ADMIN") {
-    navItems = ["Add Accounts", "Profile"];
+    navItems = ["Add Accounts", "Admin Profile"];
   } else if (decode?.roles === "ROLE_USER") {
     navItems = ["Items", "My Items", "My Requests", "Profile"];
   } else {
-    navItems = ["Items", "Requests", "Profile"];
+    navItems = ["Items", "Requests", "Staff Profile"];
   }
 
   const navList = (
