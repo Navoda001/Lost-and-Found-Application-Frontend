@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { GetAllRequestsByItemId } from "../../service/RequestService";
-import RequestAction from "./RequestAction";
+import RequestAction from "../Request/RequestAction";
 
 interface ItemRequestProps {
   open: boolean;

@@ -26,17 +26,11 @@ interface AllItem {
   claimedDate?: string;
 }
 
-interface AllRequest {
-  itemId: string | null;
-  email: string;
-}
-
 const ItemModel: React.FC<ItemModelProps> = ({ open, onClose, itemId, refreshData }) => {
   const [imgSrc, setImgSrc] = useState<string | null>(null);
   const [itemData, setItemData] = useState<AllItem | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const decode = getUser();
   const fetchData = async () => {
     if (!itemId) return;

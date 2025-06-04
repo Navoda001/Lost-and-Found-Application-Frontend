@@ -30,7 +30,6 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, onClose }) => {
     email:"",
   });
   const statusOptions = ["LOST", "FOUND"];
-  const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const decode = getUser();
   if (!open) return null;
@@ -46,7 +45,6 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, onClose }) => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
@@ -114,7 +112,6 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, onClose }) => {
       email:""
     });
     setPreviewImage(null);
-    setImageFile(null);
     onClose();
   };
 

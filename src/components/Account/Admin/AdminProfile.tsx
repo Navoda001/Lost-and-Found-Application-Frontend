@@ -29,7 +29,6 @@ const AdminProfile: React.FC = () => {
         role: '',
         image: '',
     });
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
     const decode = getUser();
     const { isAuthenticated } = useAuth();

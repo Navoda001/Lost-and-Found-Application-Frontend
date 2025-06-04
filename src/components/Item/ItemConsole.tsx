@@ -23,7 +23,6 @@ const ItemConsole = () => {
     }
 
     const [itemData, setItemData] = useState<AllItem[]>([]);
-    const [selectedItem, setSelectedItem] = useState<AllItem | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [addModalOpen, setAddModalOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
@@ -89,7 +88,7 @@ const ItemConsole = () => {
 
     const handleCloseModal = () => {
         setModalOpen(false);
-        setSelectedItem(null);
+        setSelectedItemId(null);
     };
 
     const filteredItems = itemData.filter(item => {
