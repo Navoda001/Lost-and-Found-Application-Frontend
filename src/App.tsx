@@ -2,17 +2,17 @@ import './App.css';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import ItemConsole from './components/item/ItemConsole';
-import RequestConsole from './components/Request/RequestConsole';
+import RequestConsole from './components/request/RequestConsole';
 import SignUp from './components/auth/Signup';
 import Login from './components/auth/Login';
 import Home from './components/Home';
-import Profile from './components/Account/user/UserProfile';
+import Profile from './components/account/user/UserProfile';
 import { AuthProvider } from './components/auth/AuthProvider';
-import MyItemConsole from './components/item/MyItems/MyItemConsole';
-import MyRequestConsole from './components/Request/MyRequest/MyRequestConsole';
-import StaffProfile from './components/Account/Staff/StaffProfile';
-import AdminProfile from './components/Account/Admin/AdminProfile';
-import CreateAccount from './components/Account/CreateAccount';
+import MyItemConsole from './components/item/myItems/MyItemConsole';
+import MyRequestConsole from './components/request/myRequest/MyRequestConsole';
+import StaffProfile from './components/account/staff/StaffProfile';
+import AdminProfile from './components/account/admin/AdminProfile';
+import CreateAccount from './components/account/CreateAccount';
 
 
 
