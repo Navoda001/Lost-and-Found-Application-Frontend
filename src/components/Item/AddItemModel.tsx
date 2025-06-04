@@ -64,6 +64,15 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, onClose }) => {
 
 
   const handleSubmit = async () => {
+    if (!formData.itemName || !formData.itemDescription || !formData.location || !formData.itemStatus) {
+      Swal.fire({
+        title: "Error!",
+        confirmButtonColor: "red",
+        text: "Please fill all required fields!",
+        icon: "error"
+      });
+      return;
+    }
     try {
       formData.email = decode?.sub || ""; // Set email from decoded token
       console.log("Form Data:", formData);
