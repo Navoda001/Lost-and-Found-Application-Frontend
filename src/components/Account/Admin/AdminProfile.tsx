@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import EditProfile from './EditProfile';
-import { getUser } from "../../auth/AuthProvider"
-import { useAuth } from "../../auth/AuthProvider";
+import { getUser } from "../../Auth/AuthProvider"
+import { useAuth } from "../../Auth/AuthProvider";
 import { useNavigate } from 'react-router';
 import { GetAdminByEmail } from '../../../service/AdminService';
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { GetAllRequestsByEmail } from "../../../service/RequestService";
-import { getUser } from "../../auth/AuthProvider";
+import { getUser } from "../../Auth/AuthProvider";
 import { GetStaffById } from "../../../service/StaffService";
 
 const MyRequestConsole = () => {

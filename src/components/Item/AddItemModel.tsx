@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { AddItem } from "../../service/ItemService";
 import { Listbox } from "@headlessui/react";
-import {getUser} from "../auth/AuthProvider";
+import {getUser} from "../Auth/AuthProvider";
 import Swal from 'sweetalert2'
 
 interface AddItemModalProps {

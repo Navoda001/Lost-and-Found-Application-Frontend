@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router";
 import { useNavigate } from "react-router-dom";
-import { useAuth, getUser } from "./auth/AuthProvider";
+import { useAuth, getUser } from "./Auth/AuthProvider";
 
 
 

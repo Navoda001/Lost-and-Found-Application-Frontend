@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Swal from 'sweetalert2'
 import { DeleteItem, FoundItem, GetItemById } from "../../service/ItemService";
 import { AddRequest } from "../../service/RequestService";
-import { getUser } from "../auth/AuthProvider";
+import { getUser } from "../Auth/AuthProvider";
 
 interface ItemModelProps {
   open: boolean;

@@ -1,18 +1,18 @@
 import './App.css';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import NavBar from './components/NavBar';
-import ItemConsole from './components/item/ItemConsole';
-import RequestConsole from './components/request/RequestConsole';
-import SignUp from './components/auth/Signup';
-import Login from './components/auth/Login';
+import ItemConsole from './components/Item/ItemConsole';
+import RequestConsole from './components/Request/RequestConsole';
+import SignUp from './components/Auth/Signup';
+import Login from './components/Auth/Login';
 import Home from './components/Home';
-import Profile from './components/account/user/UserProfile';
-import { AuthProvider } from './components/auth/AuthProvider';
-import MyItemConsole from './components/item/myItems/MyItemConsole';
-import MyRequestConsole from './components/request/myRequest/MyRequestConsole';
-import StaffProfile from './components/account/staff/StaffProfile';
-import AdminProfile from './components/account/admin/AdminProfile';
-import CreateAccount from './components/account/CreateAccount';
+import Profile from './components/Account/user/UserProfile';
+import { AuthProvider } from './components/Auth/AuthProvider';
+import MyItemConsole from './components/Item/MyItems/MyItemConsole';
+import MyRequestConsole from './components/Request/MyRequest/MyRequestConsole';
+import StaffProfile from './components/Account/Staff/StaffProfile';
+import AdminProfile from './components/Account/Admin/AdminProfile';
+import CreateAccount from './components/Account/CreateAccount';
 
 
 

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import Swal from 'sweetalert2'
-import { getUser } from '../auth/AuthProvider';
+import { getUser } from '../Auth/AuthProvider';
 import { UpdateRequest } from '../../service/RequestService';
 import { GetUserById } from '../../service/UserService';
 import { GetStaffById } from '../../service/StaffService';

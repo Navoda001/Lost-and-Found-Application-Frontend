@@ -4,7 +4,7 @@ import ItemCard from "./ItemCard";
 import ItemModel from "./ItemModel";
 import AddItemModal from "./AddItemModel";
 import { useNavigate } from "react-router";
-import { getUser } from "../auth/AuthProvider";
+import { getUser } from "../Auth/AuthProvider";
 
 const ItemConsole = () => {
     interface AllItem {

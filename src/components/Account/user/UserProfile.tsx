@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import EditProfile from './EditProfile';
 import ImageUpload from './ImageUpload';
 import { GetUserByEmail } from '../../../service/UserService';
-import { getUser } from "../../auth/AuthProvider"
-import { useAuth } from "../../auth/AuthProvider";
+import { getUser } from "../../Auth/AuthProvider"
+import { useAuth } from "../../Auth/AuthProvider";
 import { useNavigate } from 'react-router';
 
 interface User {

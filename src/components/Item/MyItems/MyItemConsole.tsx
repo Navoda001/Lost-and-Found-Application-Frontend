@@ -3,7 +3,7 @@ import { GetAllItems, GetItemsByEmail } from "../../../service/ItemService";
 import ItemCard from "../ItemCard";
 import ItemModel from "./ItemModel";
 import AddItemModal from "../AddItemModel";
-import { getUser } from "../../auth/AuthProvider"
+import { getUser } from "../../Auth/AuthProvider"
 import { useNavigate } from "react-router";
 
 const MyItemConsole = () => {
